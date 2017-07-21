@@ -61,6 +61,22 @@ pyridine dimer):
 
 2. To generate all files necessary to run force field calculations, run the
 following pre-processing scripts (from this main directory).
+    ```bash
+$ ./scripts/make_geometries.sh
+
+$ ./scripts/get_global_coordinates.py
+
+$ ./scripts/submit_ip_calcs.py
+    ```
+    (wait until IP calculation is finished)
+
+    ```bash
+$ ./scripts/make_sapt_ifiles.py
+
+$ ./scripts/make_isa_files.py
+
+$ ./scripts/make_dispersion_files.py
+    ```
 
 3. Submit all SAPT and ISA calculations to relevant locations. At the time of
 this writing, SAPT calculations should preferably be run on HCTC (Condor). ISA and 
@@ -70,31 +86,31 @@ output files back to Pople.
 4. Workup the results of the SAPT and ISA calculations by running the
 following post-processing scripts:
 
-```bash
+   ```bash
 ./scripts/workup_sapt_energies.py
 
 ./scripts/workup_dispersion_files.sh
-```
+   ```
 
   (Depending on the force field, dynamic polarizabilities may need to be added
   to templates/dispersion_base_constraints.index before running this script. See
   Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
   paramterization process for dispersion coefficients.)
 
-```bash
+   ```bash
 ./scripts/workup_drude_files.sh
-```
+   ```
 
-(Depending on the force field, static polarizabilities may need to be added
-to templates/drude_base_constraints.index before running this script. See
-Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
-paramterization process for drude oscillator charges.)
+    (Depending on the force field, static polarizabilities may need to be added
+    to templates/drude_base_constraints.index before running this script. See
+    Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
+    paramterization process for drude oscillator charges.)
 
-```bash
+    ```bash
 ./scripts/workup_isa_charges.py
 
 ./scripts/workup_isa_exponents.py
-```
+      ```
 
 After running these scripts, you should have the SAPT energies, long-range
 coefficients, and short-range exponents required to run the force fitting code

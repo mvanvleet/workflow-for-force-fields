@@ -61,6 +61,7 @@ pyridine dimer):
 
 2. To generate all files necessary to run force field calculations, run the
 following pre-processing scripts (from this main directory).
+
     ```bash
 $ ./scripts/make_geometries.sh
 

@@ -32,25 +32,24 @@ depend. The following files must be manually created/edited, and can all be foun
 templates subdirectory (with an example set of input files given for the
 pyridine dimer):
      1. dimer_info.dat
-        -- For each monomer, list the monomer's name and the charge on the
-            monomer. The appropriate file format should be clear from the
-            pyridine example.
-        -- In the manner described in dimer_info.dat, list all midbonds 
+        * For each monomer, list the monomer's name and the charge on the monomer. 
+        The appropriate file format should be clear from the pyridine example.
+        * In the manner described in dimer_info.dat, list all midbonds 
             that should be added between monomers. Midbonds are important for
             running accurate SAPT calcuations; see \cite{Yu2011} for details.
     2. generate_grid_settings.inp
-        -- This is the input file for GenerateGridPoints, which generates the
+        * This is the input file for GenerateGridPoints, which generates the
             dimer configurations for running SAPT calculations. The input file
             is commented so as to be self-explanatory; you will need to change
             (at the very least) the 1st, 3rd, and 4th input sections based on
             the identities of the two monomers
     3. MONA_MONB.inp (where MONA and MONB are replaced by the monomer names 
         listed in dimer_info.dat)
-        -- This file contains a title line (line 1), and (for each monomer)
+        * This file contains a title line (line 1), and (for each monomer)
             the number of atoms followed by a list of coordinates in .xyz 
             format. See pyridine_pyridine.inp for an example.
     4. MONA.atomtypes, MONB.atomtypes
-        -- Each .atomtypes file has the format of a .xyz file, where the
+        * Each .atomtypes file has the format of a .xyz file, where the
             element names have been replaced by atomtypes. This file will be
             used to generate the CamCASP input files needed for ISA calculations, 
             and is also necessary for pre-processing the input files for force

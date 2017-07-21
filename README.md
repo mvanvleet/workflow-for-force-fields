@@ -69,7 +69,7 @@ following pre-processing scripts (from this main directory).
 
 ./scripts/submit_ip_calcs.py
 ```
-    (wait until IP calculation is finished)
+ (wait until IP calculation is finished)
 
 ```bash
 ./scripts/make_sapt_ifiles.py
@@ -87,31 +87,29 @@ output files back to Pople.
 4. Workup the results of the SAPT and ISA calculations by running the
 following post-processing scripts:
 
-   ```bash
+```bash
 ./scripts/workup_sapt_energies.py
 
 ./scripts/workup_dispersion_files.sh
-   ```
-
-  (Depending on the force field, dynamic polarizabilities may need to be added
+```
+ (Depending on the force field, dynamic polarizabilities may need to be added
   to templates/dispersion_base_constraints.index before running this script. See
   Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
   paramterization process for dispersion coefficients.)
 
-   ```bash
+```bash
 ./scripts/workup_drude_files.sh
-   ```
-
-    (Depending on the force field, static polarizabilities may need to be added
+```
+ (Depending on the force field, static polarizabilities may need to be added
     to templates/drude_base_constraints.index before running this script. See
     Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
     paramterization process for drude oscillator charges.)
 
-    ```bash
+```bash
 ./scripts/workup_isa_charges.py
 
 ./scripts/workup_isa_exponents.py
-      ```
+```
 
 After running these scripts, you should have the SAPT energies, long-range
 coefficients, and short-range exponents required to run the force fitting code

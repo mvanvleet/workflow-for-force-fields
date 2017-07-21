@@ -60,8 +60,7 @@ pyridine dimer):
             field fitting.
 
 2. To generate all files necessary to run force field calculations, run the
-following pre-processing scripts (from this main directory):
-
+following pre-processing scripts (from this main directory).
 
 3. Submit all SAPT and ISA calculations to relevant locations. At the time of
 this writing, SAPT calculations should preferably be run on HCTC (Condor). ISA and 
@@ -77,10 +76,10 @@ following post-processing scripts:
 ./scripts/workup_dispersion_files.sh
 ```
 
-(Depending on the force field, dynamic polarizabilities may need to be added
-to templates/dispersion_base_constraints.index before running this script. See
-Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
-paramterization process for dispersion coefficients.)
+  (Depending on the force field, dynamic polarizabilities may need to be added
+  to templates/dispersion_base_constraints.index before running this script. See
+  Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
+  paramterization process for dispersion coefficients.)
 
 ```bash
 ./scripts/workup_drude_files.sh

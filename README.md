@@ -7,15 +7,11 @@ References
 =================
 In order of recency and relevance:
 
-VanVleet2016: 10.1021/acs.jctc.6b00209
-
-VanVleet2017: TBA
-
-McDaniel2013: 10.1021/jp3108182
-
-Schmidt2015: 10.1021/ar500272n
-
-Yu2011: 10.1021/jp204563n
+* VanVleet2016: 10.1021/acs.jctc.6b00209
+* VanVleet2017: TBA
+* McDaniel2013: 10.1021/jp3108182
+* Schmidt2015: 10.1021/ar500272n
+* Yu2011: 10.1021/jp204563n
 
 Overview
 =================
@@ -126,38 +122,26 @@ POInter documentation, see
 https://git.chem.wisc.edu/schmidt/force_fields/wikis/home
 
 
-Directory Contents
+Overview of Important Files
 =================
-    (* next to most important files)
-Input Files             <-Calculation Result
-scripts:
-get_global_coordinates.py
-make_dispersion_files.py
-make_geometries.sh
-make_isa_files.py
-make_sapt_ifiles.py
-print_homo_ip.sh
-submit_ip_calcs.py
 
-templates:
-dimer_info.dat <- monomer names and midbond positions
-dispersion_template.clt
-generate_grid_settings.inp <- geometry configuration settings
-isa_template.clt
-pbe0_template.com
-pyridine.atomtypes <- change elements to atomtypes; only matters for dispersion
-pyridine_pyridine.inp <- monomer geometries
+* dimer_info.dat <- monomer names and midbond positions
+* dispersion_template.clt
+* generate_grid_settings.inp <- geometry configuration settings
+* isa_template.clt
+* pbe0_template.com
+* pyridine.atomtypes <- change elements to atomtypes; only matters for dispersion
+* pyridine_pyridine.inp <- monomer geometries
 
 For most systems, only dimer_info.dat, the .inp files, and the .atomtypes file
-will need to be changed. The examples provided for these files should make
-things self-explanatory.
+will need to be changed. The examples provided for these files should hopefully make the format self-explanatory.
 
 
 System Requirements
 ======
 Python dependencies:
-numpy
-scipy
-chemistry (mvanvleet package; not standard, so this needs to be downloaded and
-added to your PYTHONPATH)
+* numpy
+* scipy
+* chemistry (mvanvleet package; not standard, so this needs to be downloaded and
+added to your `$PYTHONPATH`)
 

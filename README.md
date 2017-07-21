@@ -1,18 +1,20 @@
-<Date>
-Mon Nov 16 15:45:16 CST 2015
-
-<Purpose>
+=====Purpose=====
 Derive a first-principles, SAPT-based force field.
 
-<References>
+=====References=====
 In order of recency and relevance:
+
 VanVleet2016: 10.1021/acs.jctc.6b00209
+
 VanVleet2017: TBA
+
 McDaniel2013: 10.1021/jp3108182
+
 Schmidt2015: 10.1021/ar500272n
+
 Yu2011: 10.1021/jp204563n
 
-<Overview>
+=====Overview=====
 To generate a SAPT-based force field, the following inputs are required:
     a. Benchmark dimer energies from SAPT, computed for a variety of dimer
         configurations
@@ -25,7 +27,7 @@ To generate a SAPT-based force field, the following inputs are required:
 The following scripts are designed to simplify (as much as is possible) the
 workflow for force field generation. 
 
-<Method>
+=====Method=====
 1. Generate the necessary input files upon which the scripts in step #2
 depend. The following files must be manually created/edited, and can all be found in the
 templates subdirectory (with an example set of input files given for the
@@ -109,7 +111,7 @@ POInter documentation, see
 https://git.chem.wisc.edu/schmidt/force_fields/wikis/home
 
 
-<Directory Contents>
+=====Directory Contents=====
     (* next to most important files)
 Input Files             <-Calculation Result
 scripts:
@@ -135,7 +137,7 @@ will need to be changed. The examples provided for these files should make
 things self-explanatory.
 
 
-<System Requirements>
+======System Requirements=====
 Python dependencies:
 numpy
 scipy

@@ -68,9 +68,9 @@ following pre-processing scripts (from this main directory):
 ./scripts/get_global_coordinates.py
 
 ./scripts/submit_ip_calcs.py
-```
+
   (wait until IP calculation is finished)
-```bash
+
 ./scripts/make_sapt_ifiles.py
 
 ./scripts/make_isa_files.py

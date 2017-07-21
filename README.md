@@ -140,5 +140,5 @@ Python dependencies:
 numpy
 scipy
 chemistry (mvanvleet package; not standard, so this needs to be downloaded and
-added to your python package)
+added to your PYTHONPATH)
 

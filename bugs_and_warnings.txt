@@ -2,9 +2,14 @@
 Fri Nov 27 13:50:15 CST 2015
 
 <Cautions/Warnings/Bugs>
-Format of the dispersion file isn't super important for CamCASP calculation,
+
+1. Format of the dispersion file isn't super important for CamCASP calculation,
 but the main_dispersion routine is pretty finicky on format. Need to ensure
 the following:
     a. 'Charge 0' (or whatever actual charge) line must directly precede
         geometry input line.
+
+2. In templates/isa_template.clt, you'll need to replace the path in the
+'#include' line with the appropriate absolute path to your installation of
+CamCASP.
 

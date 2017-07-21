@@ -62,22 +62,22 @@ pyridine dimer):
 2. To generate all files necessary to run force field calculations, run the
 following pre-processing scripts (from this main directory).
 
-    ```bash
-$ ./scripts/make_geometries.sh
+```bash
+./scripts/make_geometries.sh
 
-$ ./scripts/get_global_coordinates.py
+./scripts/get_global_coordinates.py
 
-$ ./scripts/submit_ip_calcs.py
-    ```
+./scripts/submit_ip_calcs.py
+```
     (wait until IP calculation is finished)
 
-    ```bash
-$ ./scripts/make_sapt_ifiles.py
+```bash
+./scripts/make_sapt_ifiles.py
 
-$ ./scripts/make_isa_files.py
+./scripts/make_isa_files.py
 
-$ ./scripts/make_dispersion_files.py
-    ```
+./scripts/make_dispersion_files.py
+```
 
 3. Submit all SAPT and ISA calculations to relevant locations. At the time of
 this writing, SAPT calculations should preferably be run on HCTC (Condor). ISA and 

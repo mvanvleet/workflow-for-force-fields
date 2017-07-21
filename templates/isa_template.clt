@@ -1,0 +1,27 @@
+! Calculate distributed multipoles
+! ==========================
+
+Global
+  Units Bohr Degrees
+  Overwrite Yes
+End
+
+Molecule FILL_MOLECULE
+  Units Angstrom
+  Charge FILL_CHARGE
+  I.P. FILL_IP
+  GEOMETRY_BLOCK_GOES_HERE
+End
+
+Files
+  Properties
+  Molecule FILL_MOLECULE
+  Basis aVTZ
+  Aux-basis aVTZ  Spherical
+  ISA-Aux set2
+  File-prefix FILL_MOLECULE
+  #include /home/mvanvleet/apps/CamCASP/data/camcasp-cmnds/isa-pol-cartesian-step1
+End
+
+Finish
+

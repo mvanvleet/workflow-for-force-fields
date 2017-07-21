@@ -1,0 +1,27 @@
+Title davtz properties
+!
+Global
+  Units Bohr
+  Overwrite Yes
+End
+
+Molecule FILL_MOLECULE
+  Units Angstrom
+  I.P. FILL_IP
+Charge FILL_CHARGE
+  GEOMETRY_BLOCK_GOES_HERE
+End
+
+Run
+  Properties
+  Molecule FILL_MOLECULE
+  Basis davtz
+  File-prefix FILL_MOLECULE
+  Functional PBE0  
+  Kernel ALDAX+CHF 
+  Orient files
+  Process file
+  Sites file
+End
+
+Finish

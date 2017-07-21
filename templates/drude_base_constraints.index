@@ -1,0 +1,24 @@
+Information given is the atom type, the rank (should always be set to 1) and then the static isotropic polarizability. 
+Positive polarizabilities correspond to initial guesses; zero or negative ones to hard constraints.
+
+C_old
+1
+15.68312598
+
+
+C
+1
+0.0
+
+N     
+1
+11.7529643 
+
+H_old
+1
+0.0
+
+H
+1
+1.0
+

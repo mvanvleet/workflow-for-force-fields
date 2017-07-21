@@ -1,0 +1,10 @@
+<Date>
+Fri Nov 27 13:50:15 CST 2015
+
+<Cautions/Warnings/Bugs>
+Format of the dispersion file isn't super important for CamCASP calculation,
+but the main_dispersion routine is pretty finicky on format. Need to ensure
+the following:
+    a. 'Charge 0' (or whatever actual charge) line must directly precede
+        geometry input line.
+

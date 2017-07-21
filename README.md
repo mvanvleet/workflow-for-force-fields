@@ -3,10 +3,8 @@ Purpose
 
 Derive a first-principles, SAPT-based force field.
 
-References
+Relevant Literature
 =================
-In order of recency and relevance:
-
 * VanVleet2016: 10.1021/acs.jctc.6b00209
 * VanVleet2017: TBA
 * McDaniel2013: 10.1021/jp3108182
@@ -126,10 +124,10 @@ Overview of Important Files
 =================
 
 * dimer_info.dat <- monomer names and midbond positions
-* dispersion_template.clt
+* dispersion_template.clt <- CamCASP input file for getting induction and dispersion paramters
 * generate_grid_settings.inp <- geometry configuration settings
-* isa_template.clt
-* pbe0_template.com
+* isa_template.clt <- CamCASP input file for getting ISA exponents
+* pbe0_template.com <- DF-DFT-SAPT template for the PBE0 functional
 * pyridine.atomtypes <- change elements to atomtypes; only matters for dispersion
 * pyridine_pyridine.inp <- monomer geometries
 
@@ -142,6 +140,6 @@ System Requirements
 Python dependencies:
 * numpy
 * scipy
-* chemistry (mvanvleet package; not standard, so this needs to be downloaded and
+* chemistry (mvanvleet package; not standard, so this needs to be [downloaded](https://github.com/mvanvleet/chemistry) and
 added to your `$PYTHONPATH`)
 

@@ -31,6 +31,7 @@ Method
 depend. The following files must be manually created/edited, and can all be found in the
 templates subdirectory (with an example set of input files given for the
 pyridine dimer):
+
      1. dimer_info.dat
         * For each monomer, list the monomer's name and the charge on the monomer. 
         The appropriate file format should be clear from the pyridine example.
@@ -59,21 +60,21 @@ pyridine dimer):
 following pre-processing scripts (from this main directory):
 
 ```bash
-$ ./scripts/make_geometries.sh
+./scripts/make_geometries.sh
 
-$ ./scripts/get_global_coordinates.py
+./scripts/get_global_coordinates.py
 
-$ ./scripts/submit_ip_calcs.py
+./scripts/submit_ip_calcs.py
 ```
 
 (wait until IP calculation is finished)
 
 ```bash
-$ ./scripts/make_sapt_ifiles.py
+./scripts/make_sapt_ifiles.py
 
-$ ./scripts/make_isa_files.py
+./scripts/make_isa_files.py
 
-$ ./scripts/make_dispersion_files.py
+./scripts/make_dispersion_files.py
 ```
 
 3. Submit all SAPT and ISA calculations to relevant locations. At the time of
@@ -85,9 +86,9 @@ output files back to Pople.
 following post-processing scripts:
 
 ```bash
-$ ./scripts/workup_sapt_energies.py
+./scripts/workup_sapt_energies.py
 
-$ ./scripts/workup_dispersion_files.sh
+./scripts/workup_dispersion_files.sh
 ```
 
 (Depending on the force field, dynamic polarizabilities may need to be added
@@ -96,7 +97,7 @@ Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
 paramterization process for dispersion coefficients.)
 
 ```bash
-$ ./scripts/workup_drude_files.sh
+./scripts/workup_drude_files.sh
 ```
 
 (Depending on the force field, static polarizabilities may need to be added
@@ -105,9 +106,9 @@ Jesse McDaniel's thesis and \cite{McDaniel2013} for a full description of the
 paramterization process for drude oscillator charges.)
 
 ```bash
-$ ./scripts/workup_isa_charges.py
+./scripts/workup_isa_charges.py
 
-$ ./scripts/workup_isa_exponents.py
+./scripts/workup_isa_exponents.py
 ```
 
 After running these scripts, you should have the SAPT energies, long-range

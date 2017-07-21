@@ -69,9 +69,7 @@ following pre-processing scripts (from this main directory):
 
 ./scripts/submit_ip_calcs.py
 ```
-
 (wait until IP calculation is finished)
-
 ```bash
 ./scripts/make_sapt_ifiles.py
 

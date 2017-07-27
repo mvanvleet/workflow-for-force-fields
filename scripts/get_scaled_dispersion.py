@@ -15,6 +15,7 @@ from chemistry import io
 ####################### Global Variables ##################################
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 dispersiondir = maindir + '/dispersion/'
 
 dimer_info_file = 'dimer_info.dat'
@@ -29,7 +30,7 @@ dispersion_scale = 1.03
 ########################## Main Code ######################################
 
 # Read in monomer names from dimer info file
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')

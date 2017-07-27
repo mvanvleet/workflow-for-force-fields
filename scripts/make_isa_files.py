@@ -34,15 +34,16 @@ runcamcasp.py {0} --clt {0}.clt -d {0} --direct -q default --nproc 20 --ifexists
 
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
-inputdir = maindir + '/isa/'
+isadir = maindir + '/isa/'
 
 ip_file = templatesdir + 'ips.dat'
 template_file = templatesdir + 'isa_template.clt'
 
 
 dimer_info_file = 'dimer_info.dat'
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
@@ -55,7 +56,7 @@ q_mona = int(data[itag][1])
 itag = [ i[0] if i else [] for i in data ].index('MonB_Charge')
 q_monb = int(data[itag][1])
 
-subprocess.call(['mkdir','-p',inputdir])
+subprocess.call(['mkdir','-p',isadir])
 
 if mona == monb:
     mons = [mona]
@@ -63,7 +64,7 @@ else:
     mons = [mona,monb]
 
 for mon in mons:
-    atomtype_file = templatesdir + mon + '.atomtypes'
+    atomtype_file = inputdir + mon + '.atomtypes'
     geometry_file = templatesdir + mon + '.xyz'
 
 
@@ -103,7 +104,7 @@ for mon in mons:
 
 
     #actually write output file
-    output_file_name = inputdir + mon + '.clt'
+    output_file_name = isadir + mon + '.clt'
     output_file = file(output_file_name, 'w')
     for line in prelines:
         output_file.write(line)
@@ -129,7 +130,7 @@ for mon in mons:
     print 'Successfully wrote input file.'
 
     # Make submit script
-    with open(inputdir + 'submit_' + mon + '.sh','w') as f:
+    with open(isadir + 'submit_' + mon + '.sh','w') as f:
         f.write(submit_template.format(mon))
 
     #################### End Script ###########################################

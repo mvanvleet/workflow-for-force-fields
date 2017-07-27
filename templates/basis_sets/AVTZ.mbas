@@ -1,0 +1,49 @@
+basis={
+set,orbital
+default=avtz
+Br=aug-cc-pvtz-pp
+! ---------------- even tempered mid bond basis ------------------------
+S,Be,EVEN,5,2.5,0.5
+P,Be,EVEN,3,2.5,0.5
+D,Be,EVEN,1,2.5,0.3
+F,Be,EVEN,1,2.5,0.3
+!
+!density fitting terms
+set,jkfit
+default=avtz/jkfit
+Br=aug-cc-pvtz-pp/jkfit
+! ---------------- even tempered mid bond basis ------------------------
+S,Be,EVEN,5,2.5,0.5
+P,Be,EVEN,3,2.5,0.5
+D,Be,EVEN,1,2.5,0.3
+F,Be,EVEN,1,2.5,0.3
+!
+!dflhf basis terms
+set,dflhf
+default=avtz/jkfit
+Br=aug-cc-pvtz-pp/jkfit
+! ---------------- even tempered mid bond basis ------------------------
+S,Be,EVEN,5,2.5,0.5
+P,Be,EVEN,3,2.5,0.5
+D,Be,EVEN,1,2.5,0.3
+F,Be,EVEN,1,2.5,0.3
+!
+!Mp2fit basis terms
+set,mp2fit
+default=avtz/mp2fit
+Br=aug-cc-pvtz-pp/mp2fit
+! ---------------- even tempered mid bond basis ------------------------
+S,Be,EVEN,5,2.5,0.5
+P,Be,EVEN,3,2.5,0.5
+D,Be,EVEN,1,2.5,0.3
+F,Be,EVEN,1,2.5,0.3
+!ri basis terms
+set,ri
+default=avtz/optri
+Br=aug-cc-pvtz-pp/optri
+! ---------------- even tempered mid bond basis ------------------------
+S,Be,EVEN,5,2.5,0.5
+P,Be,EVEN,3,2.5,0.5
+D,Be,EVEN,1,2.5,0.3
+F,Be,EVEN,1,2.5,0.3
+}

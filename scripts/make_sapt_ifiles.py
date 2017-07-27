@@ -33,8 +33,9 @@ $
 maindir = os.getcwd().replace("/scripts",'')
 scriptsdir = maindir + '/scripts/'
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
-inputdir = maindir + '/sapt/input/'
+saptdir = maindir + '/sapt/input/'
 ipdir = maindir + '/sapt/monomer_calcs/'
 
 dimer_info_file = 'dimer_info.dat'
@@ -53,14 +54,14 @@ class CreateSAPTInputFile():
     '''
 
 ###########################################################################
-    def __init__(self, dimer_file, templates_path='templates/'):
+    def __init__(self, dimer_file, input_path='input/', templates_path='templates/'):
         '''
         '''
         # Set some default behavior
         self.ignorecase = True
 
         # Read in monomer names
-        with open (templatesdir + dimer_file,'r') as f:
+        with open (input_path + dimer_file,'r') as f:
             data = [ line.split() for line in f.readlines()]
 
         itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
@@ -76,6 +77,7 @@ class CreateSAPTInputFile():
         # Set input variables as class variables
         self.dimer_file = dimer_file
         self.templates_path = templates_path
+        self.input_path = input_path
 
         # Get geometries and molecular centers for each monomer
         self.xyz_mona,self.title_mona = self.read_xyz_file(self.mona)
@@ -130,7 +132,7 @@ class CreateSAPTInputFile():
         '''
 
         # Read in midbond information
-        with open (templatesdir + self.dimer_file,'r') as f:
+        with open (inputdir + self.dimer_file,'r') as f:
             data = [ line.split() for line in f.readlines()]
 
         tags = [ i[0] if i else [] for i in data ]
@@ -251,7 +253,7 @@ class CreateSAPTInputFile():
 
 
 ###########################################################################
-    def create_sapt_input_files(self,inputdir,geometriesdir,\
+    def create_sapt_input_files(self,saptdir,geometriesdir,\
             sapt_template_file='pbe0_template.com'):
             
         '''
@@ -259,17 +261,17 @@ class CreateSAPTInputFile():
 
         print 'Creating SAPT input file.'
         homedir = os.getcwd()
-        input_filepath = inputdir+'/'+self.mona+'_'+self.monb+'_'+ sapt_template_file
+        input_filepath = saptdir+'/'+self.mona+'_'+self.monb+'_'+ sapt_template_file
         
         # Copy xyz files to input directory (using xargs in case argument list
         # is long)
-        subprocess.call('echo '+ geometriesdir + '/*xyz  | xargs cp -t '+ inputdir, shell=True)
-        os.chdir(inputdir)
+        subprocess.call('echo '+ geometriesdir + '/*xyz  | xargs cp -t '+ saptdir, shell=True)
+        os.chdir(saptdir)
 
-        self.add_midbonds(inputdir)
+        self.add_midbonds(saptdir)
 
         # Create input files corresponding to all .xyz configurations
-        runscript = 'create_molpro_files_from_xyz.py'
+        runscript = scriptsdir + 'create_molpro_files_from_xyz.py'
         xyz_prefix = self.mona + '_' + self.monb
         sapt_prefix = self.mona + '_' + self.monb + '_' + sapt_template_file.rstrip('_template.com')
 
@@ -288,16 +290,16 @@ class CreateSAPTInputFile():
 ######################## Command Line Arguments ###########################
 
 # Make input directory
-subprocess.call(['mkdir','-p',inputdir])
+subprocess.call(['mkdir','-p',saptdir])
 
 # Create SAPT template file
-c = CreateSAPTInputFile(dimer_info_file, templatesdir)
+c = CreateSAPTInputFile(dimer_info_file, inputdir, templatesdir)
 c.get_ip_data()
-c.fill_sapt_template(inputdir)
+c.fill_sapt_template(saptdir)
 
 # Copy xyz files over to the input directory, add midbond functions as
 # necessary, and create input files for each .xyz configuration
-c.create_sapt_input_files(inputdir,geometriesdir)
+c.create_sapt_input_files(saptdir,geometriesdir)
 
         
 

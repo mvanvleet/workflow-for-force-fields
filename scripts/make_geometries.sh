@@ -5,7 +5,7 @@ echo $maindir
 cd $maindir
 
 mkdir -p geometries
-cp templates/*.inp geometries
+cp input/*.inp geometries
 
 cd geometries
 

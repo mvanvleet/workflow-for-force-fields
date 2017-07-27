@@ -14,8 +14,9 @@ import os
 ####################### Global Variables ##################################
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
-inputdir = maindir + '/sapt/monomer_calcs/'
+saptdir = maindir + '/sapt/monomer_calcs/'
 
 dimer_info_file = 'dimer_info.dat'
 
@@ -59,10 +60,10 @@ e_ionization=e_ion-e_atom
 ###########################################################################
 ########################## Main Code ######################################
 
-subprocess.call(['mkdir','-p',inputdir])
+subprocess.call(['mkdir','-p',saptdir])
 
 # Read in monomer names from dimer file
-with open(templatesdir + dimer_info_file,'r') as f:
+with open(inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
@@ -80,9 +81,9 @@ with open(templatesdir + mona + '.xyz','r') as f:
 lines[0] = '! ' + lines[0]
 lines[1] = '! ' + lines[1]
 
-with open(inputdir + mona + '_ip.com','w') as f:
+with open(saptdir + mona + '_ip.com','w') as f:
     f.write(ip_file.format(''.join(lines),q_mona,q_mona + 1))
-subprocess.call(['qmolpro2012',inputdir+mona+'_ip.com'])
+subprocess.call(['qmolpro2012',saptdir+mona+'_ip.com'])
 
 # Write and submit monomer B ionization potential file
 if mona == monb:
@@ -94,9 +95,9 @@ with open(templatesdir + monb + '.xyz','r') as f:
 lines[0] = '! ' + lines[0]
 lines[1] = '! ' + lines[1]
 
-with open(inputdir + monb + '_ip.com','w') as f:
+with open(saptdir + monb + '_ip.com','w') as f:
     f.write(ip_file.format(''.join(lines),q_monb,q_monb + 1))
-subprocess.call(['qmolpro2012',inputdir+monb+'_ip.com'])
+subprocess.call(['qmolpro2012',saptdir+monb+'_ip.com'])
 
 
 

@@ -36,6 +36,7 @@ maindir = os.getcwd().replace("/scripts",'')
 geodir = maindir + '/geometries/xyz/'
 newgeodir = maindir + '/geometries/xyz_wi_offsites/'
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 saptdir = maindir + '/sapt/'
 saptoutdir = saptdir + 'output/'
 saptbaddir = saptdir + 'bad_calcs/'
@@ -49,7 +50,7 @@ sapt_ofile_prefix = 'offsites_'
 
 # Monomer names
 dimer_info_file = 'dimer_info.dat'
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
 mon1 = data[itag][1]

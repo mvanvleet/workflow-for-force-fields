@@ -28,6 +28,7 @@ $ get_sapt_fitting_data.py <dirname>
 sapt_script='/home/mvanvleet/scripts/force_field_other/get-sapt-fitting-data'
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 #geometriesdir = maindir + '/geometries/'
 saptdir = maindir + '/sapt/'
 saptoutdir = saptdir + 'output/'
@@ -42,7 +43,7 @@ atol = 1.0 # mH
 
 
 dimer_info_file = 'dimer_info.dat'
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
 mon1 = data[itag][1]

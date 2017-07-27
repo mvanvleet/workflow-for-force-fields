@@ -15,6 +15,7 @@ from chemistry import io
 ####################### Global Variables ##################################
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
 
 #grid_ifile='generate_grid_settings.inp'
@@ -32,7 +33,7 @@ outline2 = 'Final Oriented coordinates for Monomer B are:'
 ########################## Main Code ######################################
 
 ## # Read in monomer names from dimer info file
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')

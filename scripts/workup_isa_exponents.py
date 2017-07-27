@@ -67,8 +67,9 @@ outdir_prefix = '/OUT/'
 ######################## Command Line Arguments ###########################
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
-indir = maindir + '/isa/'
+isadir = maindir + '/isa/'
 
 ###########################################################################
 ###########################################################################
@@ -106,7 +107,7 @@ def fit_line(x,a,b):
 ########################## Main Code ######################################
 # Get mona names
 dimer_info_file = 'dimer_info.dat'
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
 mona = data[itag][1]
@@ -121,7 +122,7 @@ else:
 for mon in mons:
 
     # Get list of atomtypes and elements from .clt file
-    clt = indir + '/' + mon + '.clt'
+    clt = isadir + '/' + mon + '.clt'
     with open(clt,'r') as f:
         lines = [line.split() for line in f.readlines()]
 
@@ -135,7 +136,7 @@ for mon in mons:
 
     # Change to output directory for carrying out the calculations
     pwd = os.getcwd()
-    outdir = indir + '/' + mon + outdir_prefix
+    outdir = isadir + '/' + mon + outdir_prefix
     plot_file = pwd + '/' + plot_file
     os.chdir(outdir)
 
@@ -174,8 +175,8 @@ for mon in mons:
             line = lines[index + count]
 
     #shape_functions = np.array(shape_functions)
-    summary_file1 = indir + mon + '.exp'
-    summary_file2 = indir + mon + '.pre'
+    summary_file1 = isadir + mon + '.exp'
+    summary_file2 = isadir + mon + '.pre'
 
     f1 = open(summary_file1,'w')
     f2 = open(summary_file2,'w')

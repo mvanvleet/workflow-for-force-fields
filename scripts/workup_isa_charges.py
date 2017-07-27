@@ -42,8 +42,9 @@ mulfit_template = '/home/mvanvleet/templates/mulfit.inp'
 ######################## Command Line Arguments ###########################
 maindir = os.getcwd().replace("/scripts",'')
 templatesdir = maindir + '/templates/'
+inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
-indir = maindir + '/isa/'
+isadir = maindir + '/isa/'
 
 
 ###########################################################################
@@ -55,7 +56,7 @@ indir = maindir + '/isa/'
 
 # Get mona names
 dimer_info_file = 'dimer_info.dat'
-with open (templatesdir + dimer_info_file,'r') as f:
+with open (inputdir + dimer_info_file,'r') as f:
     data = [ line.split() for line in f.readlines()]
 itag = [ i[0] if i else [] for i in data ].index('MonA_Name')
 mona = data[itag][1]
@@ -69,7 +70,7 @@ else:
 
 for mon in mons:
     # Get list of atomtypes and elements from .clt file
-    clt = indir + '/' + mon + '.clt'
+    clt = isadir + '/' + mon + '.clt'
     with open(clt,'r') as f:
         lines = [line.split() for line in f.readlines()]
 
@@ -81,7 +82,7 @@ for mon in mons:
 
 
     # Check ISA output for convergence before computing charges
-    outfile = indir + '/' + mon + out_dir + mon + '.out'
+    outfile = isadir + '/' + mon + out_dir + mon + '.out'
     try:
         output = subprocess.check_output(['grep','"NO CONVERGENCE"', outfile])
         print 'WARNING!!!! Stockholder procedure did not converge!'
@@ -96,7 +97,7 @@ for mon in mons:
     end_flag = 'Total molecular moments relative to origin'
     end_line = [i for i in xrange(len(lines)) if end_flag in lines[i]][0]
 
-    isa_mom_path = indir + mon + '_' + isa_mom_file
+    isa_mom_path = isadir + mon + '_' + isa_mom_file
     print 'Writing ISA charges to:'
     print isa_mom_path
 
@@ -117,7 +118,7 @@ for mon in mons:
 
     lines = lines[start_line:end_line]
 
-    l2_isa_mom_path = indir + mon + '_' + l2_isa_mom_file
+    l2_isa_mom_path = isadir + mon + '_' + l2_isa_mom_file
     print 'Writing truncated ISA charges to:'
     print l2_isa_mom_path
     with open(l2_isa_mom_path,'w') as f:

@@ -29,8 +29,7 @@ Method
 =================
 1. Generate the necessary input files upon which the scripts in step #2
 depend. The following files must be manually created/edited, and can all be found in the
-templates subdirectory (with an example set of input files given for the
-pyridine dimer):
+input subdirectory using the pyridine dimer as an example:
 
    1. dimer_info.dat
         * For each monomer, list the monomer's name and the charge on the monomer. 
@@ -64,8 +63,6 @@ following pre-processing scripts (from this main directory).
 
 ```bash
 ./scripts/make_geometries.sh
-
-./scripts/get_global_coordinates.py
 
 ./scripts/submit_ip_calcs.py
 ```

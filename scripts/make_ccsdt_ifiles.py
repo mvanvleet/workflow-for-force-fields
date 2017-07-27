@@ -2,7 +2,7 @@
 """
 
 Usage:
-    $ python make_sapt_ifles.py
+    $ python make_ccsdt_ifles.py
 
 Last Updated: Nov 16, 2015 by mvanvleet
 """
@@ -15,7 +15,8 @@ import subprocess
 
 # mvanvleet specific modules
 from chemistry import io, geometry, elementdata
-from add_midbond import add_midbond
+#from generate_geometries.generate_grid_points import GenerateGridPoints
+from xyz.add_midbond import add_midbond
 
 ###########################################################################
 ####################### Global Variables ##################################

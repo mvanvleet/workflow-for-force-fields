@@ -301,6 +301,10 @@ c.fill_sapt_template(saptdir)
 # necessary, and create input files for each .xyz configuration
 c.create_sapt_input_files(saptdir,geometriesdir)
 
+# Copy basis set file over to sapt directory
+basisfile=templatesdir + '/basis_sets/AVTZ.mbas'
+subprocess.call(['cp',basisfile,saptdir])
+
         
 
 ###########################################################################

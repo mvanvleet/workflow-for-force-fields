@@ -9,9 +9,9 @@
 !   *Change dummy atom labels on monomers a and b for both dhf and sapt calc
 !   *Update HOMO and IP for each monomer
 !   *(Monomer names)
+!   *Monomer/dimer charges
 !May need to also change the following:
 !   *Memory limits
-!   *Monomer/dimer charges
 
 
 memory,200,m

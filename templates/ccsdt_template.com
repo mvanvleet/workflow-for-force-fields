@@ -1,4 +1,16 @@
-***, co2 dimer
+***, 
+!job computes, at a CCSD(T)-f12 level of theory, the
+!interaction energy between monomers. eint is calculated as the
+!difference between the dimer and monomers' energy.
+!
+!This template utilizes density fitting.
+!
+!Need to change the following before using template:
+!   *Change dummy atom labels on monomers a and b for both dhf and sapt calc
+!   *(Monomer names)
+!   *Monomer/dimer charges
+!May need to also change the following:
+!   *Memory limits
 memory,300,m
 
 include, AVTZ.mbas
@@ -8,21 +20,21 @@ GEOMETRY_BLOCK_GOES_HERE
 
         !dimer
         dummy,Be
-        charge=0
+        charge=FILL_Q_DIMER
         {rhf}
         {CCSD(T)-F12,SCALE_TRIP=1,df_basis=jkfit,df_basis_exch=jkfit,ri_basis=ri}
         edm=energy
 
-        !monomer A
-        dummy,1,2,3,Be
-        charge=0
+        !monomer A, FILL_MONA
+        dummy, Be, FILL_I_MONB
+        charge=FILL_Q_MONA
         {rhf}
         {CCSD(T)-F12,SCALE_TRIP=1,df_basis=jkfit,df_basis_exch=jkfit,ri_basis=ri}
         ema=energy
 
-        !monomer B
-        dummy,4,5,6,Be
-        charge=0
+        !monomer B, FILL_MONB
+        dummy, Be, FILL_I_MONA
+        charge=FILL_Q_MONB
         {rhf}
         {CCSD(T)-F12,SCALE_TRIP=1,df_basis=jkfit,df_basis_exch=jkfit,ri_basis=ri}
         emb=energy

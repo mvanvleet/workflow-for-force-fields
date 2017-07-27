@@ -71,13 +71,16 @@ following pre-processing scripts (from this main directory).
 ```bash
 ./scripts/make_sapt_ifiles.py
 
+(optionally)
+./scripts/make_ccsdt_ifiles.py
+
 ./scripts/make_isa_files.py
 
 ./scripts/make_dispersion_files.py
 ```
 
-3. Submit all SAPT and ISA calculations to relevant locations. At the time of
-this writing, SAPT calculations should preferably be run on HCTC (Condor). ISA and 
+3. Submit all SAPT, CCSD(T), and ISA calculations to relevant locations. At the time of
+this writing, SAPT and CCSD(T) calculations should preferably be run on HCTC (Condor). ISA and 
 dispersion calculations should be run on Phoenix using Camcasp 5.8. Copy all
 output files back to Pople.
 

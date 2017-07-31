@@ -71,8 +71,7 @@ following pre-processing scripts (from this main directory).
 ```bash
 ./scripts/make_sapt_ifiles.py
 
-(optionally)
-./scripts/make_ccsdt_ifiles.py
+./scripts/make_ccsdt_ifiles.py               (optional)
 
 ./scripts/make_isa_files.py
 

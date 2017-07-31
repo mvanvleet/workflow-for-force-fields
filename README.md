@@ -76,7 +76,7 @@ following pre-processing scripts (from this main directory).
 
 ./scripts/make_isa_files.py
 
-./scripts/make_dispersion_files.py
+./scripts/make_dmapol_files.py
 ```
 
 3. Submit all SAPT, CCSD(T), and ISA calculations to relevant locations. At the time of

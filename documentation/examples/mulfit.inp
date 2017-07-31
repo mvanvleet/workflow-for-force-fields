@@ -1,0 +1,27 @@
+Title
+Multipole Rank Transformation
+
+units Bohr
+
+Verbose
+
+! Mom file in Orient format:
+DMA ISA_L4_offsites.mom
+
+! Calculate total multipoles of fitted scheme up to rank 4
+Total rank 4
+
+! Modified radius for type Hb
+! We do not have such a site in this example, but this is how 
+! the radii can be modified.
+Radii
+Hb   1.0
+
+! This is the name of the output file:
+Orient ISA_L4_to_L0.mom
+
+! List the site names and ranks of terms needed:
+! The TYPE names are used here, not the site labels!
+! ATOMTYPES_GO_HERE
+Ranks
+

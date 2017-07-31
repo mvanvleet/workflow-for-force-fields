@@ -1,3 +1,4 @@
-1 
-pyridine offsites; global coordinates
-H        0.00000000       0.00000000       0.00000000
+2 
+offsite positions (not neeed for most force fields); express coordinates in same axis system used in ../templates/<monomer>.xyz
+Du1      0.00000000       0.00000000       0.00000000
+Du2      1.00000000       0.00000000       0.00000000

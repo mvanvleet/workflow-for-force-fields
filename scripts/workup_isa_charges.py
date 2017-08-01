@@ -31,8 +31,8 @@ l2_isa_mom_file = 'ISA_L2.mom'
 mulfit_out_file = 'ISA_L4_to_L0.mom'
 out_dir = '/OUT/'
 
-mulfit = '/home/mvanvleet/scripts/charge_analyses/mulfit'
-mulfit_template = '/home/mvanvleet/templates/mulfit.inp'
+## mulfit = '/home/mvanvleet/scripts/charge_analyses/mulfit'
+## mulfit_template = '/home/mvanvleet/templates/mulfit.inp'
 
 ###########################################################################
 ###########################################################################

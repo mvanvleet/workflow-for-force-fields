@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# This script takes as input the MOLPRO output files from running SAPT(DFT) on
+# each geometry- and outputs both the geometry and the interaction energy
+# decomposition in a standardized format.
+# 
+# Note, this code will only run correctly if the following are true:
+#  *All relevant .out files are stored in the PWD
+#  *if midbonds=True, then midbond_file containing relevant midbond geometry
+#   has been created. As described below, midbond_file is created by running
+#   the midbond_generator script.
+#
+# Last updated: 09/30/13 by mvanvleet
+
+################## Variable Specification  #######################
+# User Defined Variables:
+
+# Specify whether or not to include midbonds.
+midbonds=false
+# Specify file containing midbond functions (if relevant). File obtained by running script 
+# $ ./o2_midbond_generator > midbond_file which should be found in this folder.
+midbond_file="midbond_positions.dat"
+
+# Global Variables: 
+# Conversion factors 
+ang2bohr=1.889725989
+Ha2mH=1000
+################ End Variable Specification ######################
+
+for file in *.out; do
+#for file in *0000.out; do
+######################## Scrape information from each .out/.xyz file ########
+# Obtain number of atoms in each monomer from .out file
+n_atoms_mon1=`grep "Geometry for monomer A" -A 1 $file | tail -n 1`
+n_atoms_mon2=`grep "Geometry for monomer B" -A 1 $file | tail -n 1`
+
+# ngrep arguments refer to the number of lines subsequent grep commands are
+# to scrape, and depend on the number of atoms in each monomer
+ngrep1=`expr $n_atoms_mon1 + 1`
+ngrep2=`expr $n_atoms_mon2 + 1`
+
+# Obtain formatted geometry for each monomer. Briefly, these complicated
+# one-liners get out all lines of the .out file that pertain to the geometry,
+# extracts which lines belong to each monomer, and formats the resultant
+# geomtry into a .xyz-like output with units of Bohr
+geometry_mon1=$(grep "Geometry for monomer A" -A $ngrep1 $file | \
+                tail -n $n_atoms_mon1 | \
+                awk '{printf "%-5s %20f %20f %20f\n", \
+                $1, $3, $4, $5}' )
+geometry_mon2=$(grep "Geometry for monomer B" -A $ngrep2 $file | \
+                tail -n $n_atoms_mon2 | \
+                awk '{printf "%-5s %20f %20f %20f\n", \
+                $1, $3, $4, $5}' )
+
+## Add in midbond sites (if relevant)
+if $midbonds; then
+    # Update number of atoms
+    n_atoms_mon1=`expr $n_atoms_mon1 + 1`
+    n_atoms_mon2=`expr $n_atoms_mon2 + 1`
+    # Grep out midbond information
+    midbond_mon1=$(grep ${file%.???} -A 1 $midbond_file | \
+                tail -n 1 | \
+                awk '{printf "%-5s %20f %20f %20f\n", \
+                $1, $2*const, $3*const, $4*const}' const=$ang2bohr)
+    midbond_mon2=$(grep ${file%.???} -A 2 $midbond_file | \
+                tail -n 1 | \
+                awk '{printf "%-5s %20f %20f %20f\n", \
+                $1, $2*const, $3*const, $4*const}' const=$ang2bohr)
+fi
+
+# Get sapt decomposition energies from .out file (all energies in mH, except
+# E2indBA, E2indAB, E2exchind_BA, and E2exchind_AB, which all have energies in
+# Ha and need to be converted).
+E1pol=`grep "E1pol" $file | tail -1 | awk '{print $2}'`
+E1exch=`grep "E1exch " $file | tail -1 | awk '{print $2}'`
+E1exchS2=`grep "E1exch(S2)" $file | tail -1 | awk '{print $2}'`
+E2indunc=`grep "E2ind(unc)" $file | tail -1 | awk '{print $2}'`
+E2ind=`grep "E2ind " $file | tail -1 | awk '{print $2}'`
+E2indexch=`grep "E2ind-exch" $file | tail -1 | awk '{print $2}'`
+E2dispunc=`grep "E2disp(unc)" $file | tail -1 | awk '{print $2}'`
+E2disp=`grep "E2disp " $file | tail -1 | awk '{print $2}'`
+E2dispexchunc=`grep "E2disp-exch(unc)" $file | tail -1 | awk '{print $2}'`
+E2dispexch=`grep "E2disp-exch" $file | tail -1 | awk '{print $2}'`
+E1tot=`grep "E1tot" $file | tail -2 | head -1 |  awk '{print $2}'`
+E2tot=`grep "E2tot" $file | tail -2 | head -1 | awk '{print $2}'`
+E1totE2tot=`grep "E1tot+E2tot" $file | tail -1 | awk '{print $2}'`
+E2indBA=`grep "Induction B->A" $file | tail -1 | awk '{printf "%20f", $4*const}' const=$Ha2mH`
+E2indAB=`grep "Induction A->B" $file | tail -1 | awk '{printf "%20f", $4*const}' const=$Ha2mH`
+E2exchind_BA=`grep "E2exch-ind(A" $file | tail -1 | awk '{printf "%20f", $3*const}' const=$Ha2mH`
+E2exchind_AB=`grep "E2exch-ind(B" $file | tail -1 | awk '{printf "%20f", $3*const}' const=$Ha2mH`
+dhf=`grep "DHF" $file | tail -1 | awk '{print $4}'`
+######################### End file scrape ##############################################
+
+################ Output results according to template #################################
+echo $n_atoms_mon1
+echo "$geometry_mon1"
+if $midbonds; then echo "$midbond_mon1"; fi
+#echo ---
+echo $n_atoms_mon2
+echo "$geometry_mon2"
+if $midbonds; then echo "$midbond_mon2"; fi
+#echo ---
+printf "%-40s %16f\n" "E1pol"                      ${E1pol/D/E}
+printf "%-40s %16f\n" "E1exch"                    ${E1exch/D/E}        
+printf "%-40s %16f\n" "E1exch(S2)"              ${E1exchS2/D/E}      
+printf "%-40s %16f\n" "E2ind(unc)"              ${E2indunc/D/E}      
+printf "%-40s %16f\n" "E2ind"                      ${E2ind/D/E}         
+printf "%-40s %16f\n" "E2ind-exch"             ${E2indexch/D/E}     
+printf "%-40s %16f\n" "E2disp(unc)"            ${E2dispunc/D/E}     
+printf "%-40s %16f\n" "E2disp"                    ${E2disp/D/E}     
+printf "%-40s %16f\n" "E2disp-exch(unc)"   ${E2dispexchunc/D/E} 
+printf "%-40s %16f\n" "E2disp-exch"           ${E2dispexch/D/E}    
+printf "%-40s %16f\n" "E1tot"                      ${E1tot/D/E}         
+printf "%-40s %16f\n" "E2tot"                      ${E2tot/D/E}         
+printf "%-40s %16f\n" "E1tot+E2tot"           ${E1totE2tot/D/E}    
+printf "%-40s %16f\n" "E2ind[B->A]"              ${E2indBA/D/E}       
+printf "%-40s %16f\n" "E2ind[A->B]"              ${E2indAB/D/E}       
+printf "%-40s %16f\n" "E2exchind_BA"        ${E2exchind_BA/D/E}  
+printf "%-40s %16f\n" "E2exchind_AB"        ${E2exchind_AB/D/E}  
+printf "%-40s %16f\n" "dhf"                          ${dhf/D/E}           
+printf "\n"
+################# End results output #################################################
+done

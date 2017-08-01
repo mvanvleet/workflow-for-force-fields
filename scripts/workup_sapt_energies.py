@@ -25,8 +25,9 @@ $ get_sapt_fitting_data.py <dirname>
 ---------------------------------------------------------------------------
     '''
 
-sapt_script='/home/mvanvleet/scripts/force_field_other/get-sapt-fitting-data'
 maindir = os.getcwd().replace("/scripts",'')
+sapt_script= maindir + '/scripts/get-sapt-fitting-data'
+#'/home/mvanvleet/scripts/force_field_other/get-sapt-fitting-data'
 templatesdir = maindir + '/templates/'
 inputdir = maindir + '/input/'
 #geometriesdir = maindir + '/geometries/'

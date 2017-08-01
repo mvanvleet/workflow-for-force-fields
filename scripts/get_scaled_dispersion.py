@@ -20,7 +20,10 @@ dispersiondir = maindir + '/dispersion/'
 
 dimer_info_file = 'dimer_info.dat'
 
-dispersion_scale = 1.03
+try:
+    dispersion_scale = float(sys.argv[1])
+except IndexError:
+    dispersion_scale = 1.03
 
 ###########################################################################
 ###########################################################################

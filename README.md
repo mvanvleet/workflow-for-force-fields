@@ -80,7 +80,7 @@ following pre-processing scripts (from this main directory).
 
 3. Submit all SAPT, CCSD(T), and ISA calculations to relevant locations. At the time of
 this writing, SAPT and CCSD(T) calculations should preferably be run on HCTC (Condor). ISA and 
-dispersion calculations should be run on Phoenix using Camcasp 5.8. Copy all
+DMA-pol calculations should be run on Phoenix using Camcasp 5.8. Copy all
 output files back to Pople.
 
 4. Workup the results of the SAPT and ISA calculations by running the

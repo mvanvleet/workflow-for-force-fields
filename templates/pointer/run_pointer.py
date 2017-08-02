@@ -46,8 +46,17 @@ induction_exponents_dir = input_dir
 multipoles_suffix = settings.multipoles_suffix
 
 use_slater_ff = (settings.functional_form.lower() == 'slater') 
-fit_dispersion = settings.fit_anisotropic_dispersion
-fit_isotropic_dispersion = settings.fit_isotropic_dispersion
+
+fit_dispersion = False
+fit_isotropic_dispersion = False
+if settings.fit_dispersion.lower() == 'anisotropic':
+    fit_dispersion = True
+elif settings.fit_dispersion.lower() == 'all':
+    fit_dispersion = True
+    fit_isotropic_dispersion = True
+elif settings.fit_dispersion.lower() != 'none':
+    sys.exit('Dispersion fit type not recognized')
+
 fit_residuals = settings.fit_residuals
 separate_induction_exponents = defaults.separate_induction_exponents
 
@@ -127,7 +136,7 @@ def create_param_file(mon1,mon2,input_sapt, constraints, cn_coeffs,
         if separate_induction_exponents:
             f.write('separate_induction_exponents  True\n')
         f.write('thole_damping_type {}\n'.format(settings.thole_damping_type))
-        f.write('induction_damping_type {}\n'.format(settings.induction_damping_type))
+        f.write('induction_damping_type {}\n'.format(defaults.induction_damping_type))
         f.write('thole_param            {:8.6f}\n'.format(thole_param))
         f.write('\n')
 

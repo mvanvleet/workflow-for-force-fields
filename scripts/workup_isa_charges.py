@@ -28,7 +28,8 @@ charges_dir = 'isa/point_charges/'
 subprocess.call(['mkdir','-p',charges_dir])
 isa_mom_file = 'ISA_L4.mom'
 l2_isa_mom_file = 'ISA_L2.mom'
-mulfit_out_file = 'ISA_L4_to_L0.mom'
+l0_isa_mom_file = 'ISA_L0.mom'
+# mulfit_out_file = 'ISA_L4_to_L0.mom'
 out_dir = '/OUT/'
 
 ## mulfit = '/home/mvanvleet/scripts/charge_analyses/mulfit'
@@ -118,31 +119,35 @@ for mon in mons:
 
     lines = lines[start_line:end_line]
 
-    l2_isa_mom_path = isadir + mon + '_' + l2_isa_mom_file
-    print 'Writing truncated ISA charges to:'
-    print l2_isa_mom_path
-    with open(l2_isa_mom_path,'w') as f:
-        collect_flag = True
-        multipole_count = 0
-        for i,line in enumerate(data):
-            if not line:
-                collect_flag = True
-                f.write('\n')
-            elif line[0] == '!':
-                # Skip comments
-                f.write(lines[i])
-            elif collect_flag == True:
-                # Write atom header line
-                f.write(lines[i])
-                multipole_count = 0
-                collect_flag = False
-            else:
-                # Lines containing multipoles
-                for l in line:
-                    m = multipoles[multipole_count]
-                    if int(m[1]) < 3:
-                        f.write('\t\t{:5s} = {} \n'.format(m,l))
-                    multipole_count += 1
+    # Write truncated ISA charges to relevant files
+    isa_files = [l0_isa_mom_file,l2_isa_mom_file]
+    isa_max_rank = [0,2]
+    for isa_file,max_rank in zip(isa_files,isa_max_rank):
+        isa_mom_path = isadir + mon + '_' + isa_file
+        print 'Writing truncated ISA charges to:'
+        print isa_mom_path
+        with open(isa_mom_path,'w') as f:
+            collect_flag = True
+            multipole_count = 0
+            for i,line in enumerate(data):
+                if not line:
+                    collect_flag = True
+                    f.write('\n')
+                elif line[0] == '!':
+                    # Skip comments
+                    f.write(lines[i])
+                elif collect_flag == True:
+                    # Write atom header line
+                    f.write(lines[i])
+                    multipole_count = 0
+                    collect_flag = False
+                else:
+                    # Lines containing multipoles
+                    for l in line:
+                        m = multipoles[multipole_count]
+                        if int(m[1]) <= max_rank :
+                            f.write('\t\t{:5s} = {} \n'.format(m,l))
+                        multipole_count += 1
 
 ###########################################################################
 ###########################################################################

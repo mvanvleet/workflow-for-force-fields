@@ -264,6 +264,24 @@ def create_param_file(mon1,mon2,input_sapt, constraints, cn_coeffs,
 
 
 ###########################################################################
+def get_atomtypes(sapt_file):
+    '''Read in atomtypes from .sapt file'''
+        
+    atomtypes = []
+
+    with open(sapt_file,'r') as f:
+        # First line contains information about the number of lines in monomer a
+        num_atoms_mona=int(f.readline())
+        for line in range(num_atoms_mona):
+            atom = f.readline().split()[0]
+            atomtypes.append(atom)
+        num_atoms_monb=int(f.readline())
+        for line in range(num_atoms_monb):
+            atom = f.readline().split()[0]
+            atomtypes.append(atom)
+
+    return atomtypes
+###########################################################################
 def get_exponents(molecule,exponent_type='density-cutoff'):
     ''' Assuming exponent files of the following form (for each element in the
     file)
@@ -441,10 +459,10 @@ pwd = os.getcwd()
 
 # Copy relevant files for the dimer pair to the dimer directory
 sapt_file = sapt_dir + mon1 + '_' + mon2 + '.sapt'
-subprocess.call(['cp', sapt_file, '.'])
+# subprocess.call(['cp', sapt_file, '.'])
 
 unconstrained_param_file = mon1 + '_' + mon2 + '_unconstrained.param'
-sapt_file = mon1 + '_' + mon2 + '.sapt'
+# sapt_file = mon1 + '_' + mon2 + '.sapt'
 
 
 if defaults.exponent_source.upper() == 'IP':
@@ -469,11 +487,10 @@ else:
 Aparams_mon1 = [ [0,i,j] for (i,j) in zip(exponents_mon1,induction_exponents_mon1)] 
 Aparams_mon2 = [ [0,i,j] for (i,j) in zip(exponents_mon2,induction_exponents_mon2)] 
 
-atomtypes_mon1 = [ line[0] for line in io.ReadCoordinates(atomtypes_dir + mon1 + '.xyz')[0] ]
-atomtypes_mon2 = [ line[0] for line in io.ReadCoordinates(atomtypes_dir + mon2 + '.xyz')[0] ]
+# Get atomtypes from .sapt file
+all_atoms = get_atomtypes(sapt_file)
 
 param_constraints = {}
-all_atoms = atomtypes_mon1 + atomtypes_mon2
 exponents = exponents_mon1 + exponents_mon2
 induction_exponents = induction_exponents_mon1 + induction_exponents_mon2
 unique_atoms = set(all_atoms)
@@ -507,11 +524,6 @@ drude_charges_mon1 = get_drude_charges(mon1)
 drude_charges_mon2 = get_drude_charges(mon2)
 drude_charges = [drude_charges_mon1, drude_charges_mon2]
 
-## # Get dispersion from the results of the dispersion calculations
-## dispersion_mon1 = get_dispersion_coeffs(mon1)
-## dispersion_mon2 = get_dispersion_coeffs(mon2)
-## dispersion = [dispersion_mon1, dispersion_mon2]
-
 # Create the parameter file
 create_param_file(mon1,mon2,sapt_file, param_constraints, dispersion, drude_charges, unconstrained_param_file,
         constrain_Aparams=defaults.lone_pair_flags+atomtype_constraints, springcon=0.1)
@@ -522,7 +534,6 @@ subprocess.call(['cp',multipoles_dir + mon2 + multipoles_suffix,'.'])
 fitfiles = ['edrudes','exchange','electrostatics','induction','dhf','dispersion','total_energy']
 if settings.fit_residuals:
     fitfiles += ['residual_energy']
-
 coeffs_fitfile = settings.file_prefix + 'coeffs' + settings.file_suffix + '.out'
 
 # Perform Fitting

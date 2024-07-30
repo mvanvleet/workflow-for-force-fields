@@ -8,6 +8,7 @@ Last Updated:
 import numpy as np
 import sys
 import os
+import warnings
 from scipy.signal import argrelmin, argrelmax
 from scipy.optimize import curve_fit
 # mvanvleet specific modules
@@ -58,6 +59,9 @@ plot_file = 'isa_templates/plot_exponents.plt'
 # Outdir prefix
 outdir_prefix = '/OUT/'
 
+# Verbosity
+verbose = False
+
 
 ###########################################################################
 ###########################################################################
@@ -70,6 +74,7 @@ templatesdir = maindir + '/templates/'
 inputdir = maindir + '/input/'
 geometriesdir = maindir + '/geometries/'
 isadir = maindir + '/isa/'
+paramsdir = maindir + '/params/'
 
 ###########################################################################
 ###########################################################################
@@ -159,7 +164,7 @@ for mon in mons:
         elif len(indices) == natoms:
             pass
         elif len(indices) != natoms:
-            print 'Number of shape functions is not the same as the number of atoms!'
+            print('Number of shape functions is not the same as the number of atoms!')
             sys.exit()
 
     shape_functions = [ [] for i in range(natoms) ]
@@ -175,23 +180,25 @@ for mon in mons:
             line = lines[index + count]
 
     #shape_functions = np.array(shape_functions)
-    summary_file1 = isadir + mon + '.exp'
-    summary_file2 = isadir + mon + '.pre'
+    summary_file1 = isadir + mon + '_exponent_summary.dat'
+    summary_file2 = isadir + mon + '_prefactor_summary.dat'
 
     f1 = open(summary_file1,'w')
     f2 = open(summary_file2,'w')
 
-    print 'Writing exponents (B params) file to '
-    print summary_file1
-    print 'and prefactors (A params in this script, D params in JCTC 2016) file to'
-    print summary_file2
-    print
+    print('Writing exponents (B params) full data summary to ')
+    print(summary_file1)
+    print('and prefactors (A params in this script, D params in JCTC 2016) file to')
+    print(summary_file2)
+    print()
 
+    exponents = []
     for i,atom_shape in enumerate(shape_functions):
         atom_shape = np.array(atom_shape)
         f1.write('Atomtype: '+ atomtypes[i] + '\n')
         f2.write('Atomtype: '+ atomtypes[i] + '\n')
-        print 'Atomtype: ', atomtypes[i]
+        if verbose:
+            print('Atomtype: ', atomtypes[i])
         r = np.linspace(0,10,501)
         density = np.zeros_like(r)
         ddens = np.zeros_like(r)
@@ -249,8 +256,6 @@ for mon in mons:
         f1.write(template.format(b_two_point))
         template = 'B (average over range): {:16.8f}\n'
         f1.write(template.format(b_avg))
-        # print 'B (two-point fit):', b_two_point
-        # print 'B (average over range):', b_avg
 
         a_two_point = np.exp(a)
 
@@ -258,14 +263,13 @@ for mon in mons:
         f2.write(template.format(a_two_point))
         template = 'A (average over range): Not shown\n'
         f2.write(template.format())
-        ## print 'A (two-point fit):', a_two_point
-        ## print 'A (average over range):', 'Not shown'
 
         linear_density = a + b*r
 
         # To see how much basis set errors might be affecting the tail region,
         # refit the tail region of our new linear density using the ISA Gaussian
         # basis set.
+        warnings.filterwarnings('ignore')
         try:
             popt,pcov = curve_fit(Gaussian(atom_shape[:,1]).fit_exp, r[i1:i2],\
                     linear_density[i1:i2], p0=atom_shape[:,0])
@@ -317,26 +321,13 @@ for mon in mons:
         f1.write(template.format(b_min_rmse))
         template = 'A (density_abs_cutoff minimize RMSE): {:16.8f}\n'
         f2.write(template.format(a_min_rmse))
-        print 'A (density_abs_cutoff minimize RMSE):', a_min_rmse
-        print 'B (density_abs_cutoff minimize RMSE):', b_min_rmse
+        if verbose:
+            print('A (density_abs_cutoff minimize RMSE):', a_min_rmse)
+            print('B (density_abs_cutoff minimize RMSE):', b_min_rmse)
+        exponents.append(b_min_rmse)
 
 
-        ## # Finally, create a new linear fit to the density that minimizes RMSE
-        ## # over a specified range of points (and thus provides an 'effective'
-        ## # atomic exponent:
-        ## vdw_rstart = rel_vdw_start*VdWRadius(atno[i])
-        ## vdw_rend = rel_vdw_end*VdWRadius(atno[i])
-
-        ## i1 = np.argmin(abs(r-vdw_rstart))
-        ## i2 = np.argmin(abs(r-vdw_rend))
-        ## popt, pcov = curve_fit(fit_line,r[i1:i2],tail_corrected_density[i1:i2])
-
-        ## linear_density2 = fit_line(r,*popt)
-
-        ## b_min_rmse = -popt[0]
-        ## print 'B (vdw minimize RMSE):', b_min_rmse
-
-
+        # Write the raw data for each atom to file
         outfile = atomtypes[i] + out_suffix
         with open(outfile,'w') as f:
             f.write('Fitting densities and creating tail-weighted regioin over the range {} to {} bohr:\n'.format(tail_r1,tail_r2))
@@ -353,6 +344,15 @@ for mon in mons:
     f1.close()
     f2.close()
 
+    # Write each atomtype and exponent to the .exp file, save in the params
+    # directory
+    os.makedirs(paramsdir,exist_ok=True)
+    outfile = paramsdir + mon + '.exp'
+    print('Saving exponent summary file (for use in POInter) to')
+    print(outfile)
+    with open(outfile,'w') as f:
+        for atom,exp in zip(atomtypes,exponents):
+            f.write(f"{atom:10s} {exp:8.5f}\n")
 
 os.chdir(pwd)
 

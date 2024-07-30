@@ -86,7 +86,7 @@ for mon in mons:
     input_file.close()
 
     #read in geometry from corresponding .gxyz file and format for gamess 
-    print geometry_file
+    print(geometry_file)
     xyz = io.ReadCoordinates(geometry_file)[0]
     ## with open(geometry_file,'r') as f:
     ##     geometry_block = f.readlines()[2:] #skip title lines
@@ -129,7 +129,7 @@ for mon in mons:
     for [fill,item] in zip(fill_items,items):
         subprocess.call(['sed','-i',"s/"+fill+'/'+str(item)+'/',output_file_name])
 
-    print 'Successfully wrote input file.'
+    print('Successfully wrote input file.')
 
     # Make submit script
     with open(dispersiondir + 'submit_' + mon + '.sh','w') as f:

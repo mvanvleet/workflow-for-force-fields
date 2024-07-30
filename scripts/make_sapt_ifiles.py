@@ -106,12 +106,12 @@ class CreateSAPTInputFile():
     def get_ip_data(self):
         '''
         '''
-        print 'Fetching IP data.'
+        print('Fetching IP data.')
         ofile1 = ipdir + self.mona + '_ip.out'
-        ip1 = subprocess.check_output([scriptsdir + '/print_homo_ip.sh',ofile1])
+        ip1 = subprocess.check_output([scriptsdir + '/print_homo_ip.sh',ofile1]).decode(sys.stdout.encoding)
 
         ofile2 = ipdir + self.monb + '_ip.out'
-        ip2 = subprocess.check_output([scriptsdir + '/print_homo_ip.sh',ofile2])
+        ip2 = subprocess.check_output([scriptsdir + '/print_homo_ip.sh',ofile2]).decode(sys.stdout.encoding)
 
         with open(templatesdir + 'ips.dat','w') as f:
             f.write(self.mona + '\t')
@@ -139,7 +139,7 @@ class CreateSAPTInputFile():
 
         # Read in xyz file(s)
         #xyz_files = subprocess.check_output('ls '+input_dir+'/*xyz',shell=True)
-        xyz_files = subprocess.check_output('echo '+input_dir+'/*xyz',shell=True)
+        xyz_files = subprocess.check_output('echo '+input_dir+'/*xyz',shell=True).decode(sys.stdout.encoding)
         xyz_files = xyz_files.split()
 
         xyz_coords = []
@@ -152,13 +152,13 @@ class CreateSAPTInputFile():
             i_mon1 = data[i][1]
             i_mon2 = data[i][2]
 
-            print 'Inserting midbonds between',
+            print('Inserting midbonds between', end=' ')
             if i_mon1.upper() != 'COM':
-                print 'atom',
-            print i_mon1 + ' on mon A and',
+                print('atom', end=' ')
+            print(i_mon1 + ' on mon A and', end=' ')
             if i_mon2.upper() != 'COM':
-                print 'atom',
-            print i_mon2 + ' on mon B.'
+                print('atom', end=' ')
+            print(i_mon2 + ' on mon B.')
 
             for c,coords in enumerate(xyz_coords):
                 if i_mon1.upper() == 'COM':
@@ -187,7 +187,7 @@ class CreateSAPTInputFile():
 
 ###########################################################################
     def fill_sapt_template(self,dir,\
-            template_file='pbe0_template.com',\
+            template_file='pbe0_ct_template.com',\
             ip_file='templates/ips.dat'):
         '''
         '''
@@ -253,12 +253,12 @@ class CreateSAPTInputFile():
 
 ###########################################################################
     def create_sapt_input_files(self,saptdir,geometriesdir,\
-            sapt_template_file='pbe0_template.com'):
+            sapt_template_file='pbe0_ct_template.com'):
             
         '''
         '''
 
-        print 'Creating SAPT input file.'
+        print('Creating SAPT input file.')
         homedir = os.getcwd()
         input_filepath = saptdir+'/'+self.mona+'_'+self.monb+'_'+ sapt_template_file
         
@@ -272,7 +272,7 @@ class CreateSAPTInputFile():
         # Create input files corresponding to all .xyz configurations
         runscript = scriptsdir + 'create_molpro_files_from_xyz.py'
         xyz_prefix = self.mona + '_' + self.monb
-        sapt_prefix = self.mona + '_' + self.monb + '_' + sapt_template_file.rstrip('_template.com')
+        sapt_prefix = self.mona + '_' + self.monb + '_' + sapt_template_file.replace('_template.com','')
 
         subprocess.call([runscript, sapt_prefix, xyz_prefix])
         os.chdir(homedir)

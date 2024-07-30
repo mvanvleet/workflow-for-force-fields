@@ -23,7 +23,7 @@ dimer_info_file = 'dimer_info.dat'
 ip_file = '''
 ***, Ionization Energy
 
-memory,100,m
+memory,400,m
 
 basis=avtz
 
@@ -83,7 +83,7 @@ lines[1] = '! ' + lines[1]
 
 with open(saptdir + mona + '_ip.com','w') as f:
     f.write(ip_file.format(''.join(lines),q_mona,q_mona + 1))
-subprocess.call(['qmolpro2012',saptdir+mona+'_ip.com'])
+subprocess.call(['qmolpro','-n','12',saptdir+mona+'_ip.com'])
 
 # Write and submit monomer B ionization potential file
 if mona == monb:

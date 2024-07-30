@@ -42,7 +42,7 @@ itag = [ i[0] if i else [] for i in data ].index('MonB_Name')
 mon2_name = data[itag][1]
 
 # Get geometries from geometries output file
-print 'Reading global coordinates from:', geometriesdir + grid_ofile
+print('Reading global coordinates from:', geometriesdir + grid_ofile)
 with open(geometriesdir + grid_ofile,'r') as f:
     lines = f.readlines()
 
@@ -73,12 +73,12 @@ for line in lines:
 # Write geometries to global coordinates file
 title_text = mon1_name + '; global coordinates'
 ofile = templatesdir + mon1_name + '.xyz'
-print 'Writing Monomer 1 global coordinates to:',ofile
+print('Writing Monomer 1 global coordinates to:',ofile)
 io.WriteCoordinates(mon1_coords,ofile,title_text=title_text)
 
 title_text = mon2_name + '; global coordinates'
 ofile = templatesdir + mon2_name + '.xyz'
-print 'Writing Monomer 2 global coordinates to:',ofile
+print('Writing Monomer 2 global coordinates to:',ofile)
 io.WriteCoordinates(mon2_coords,ofile,title_text=title_text)
 
 ###########################################################################

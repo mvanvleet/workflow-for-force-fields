@@ -66,7 +66,7 @@ dimer = mon1 + '_' + mon2
 # and chunk prevent us from going over this limit
 max_batch = 500
 def chunk(seq, size=max_batch):
-    return (seq[pos:pos + size] for pos in xrange(0, len(seq), size))
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
 
 ###########################################################################
@@ -138,20 +138,20 @@ os.chdir(pwd)
 # script
 os.chdir(saptoutdir)
 sapt_file = mon1 + '_' + mon2 + '.sapt'
-print 'Reading in SAPT information.'
+print('Reading in SAPT information.')
 with open(saptoutdir + sapt_file,'r') as f:
     sapt_lines = [line.split() for line in f.readlines()]
 sapt_lines.append([])
 ## sapt_lines = subprocess.check_output([sapt_script])
 ## sapt_lines = [line.split() for line in sapt_lines.split('\n')]
-print 'Writing SAPT information to file.'
+print('Writing SAPT information to file.')
 
 # Check that the SAPT file has the correct number of atoms for each monomer
 nmon1 = len(xyz1)
 nmon2 = len(xyz2)
 if len(xyz1) != int(sapt_lines[0][0]) or len(xyz2) != int(sapt_lines[nmon1+1][0]):
-    print 'nmon1 = ', len(xyz1)
-    print 'nmon2 = ', len(xyz2)
+    print('nmon1 = ', len(xyz1))
+    print('nmon2 = ', len(xyz2))
     sys.exit('Incorrect number of atoms for one of the monomers.')
 
 # nfiles and nlines are the number of dimer geometries and number of lines per
@@ -189,8 +189,8 @@ with open(sapt_ofile_prefix + sapt_file,'w') as f:
             template = '{:20s}'*len(line) + '\n'
             f.write(template.format(*line))
             
-print 'The SAPT output file can be found in '
-print saptoutdir
+print('The SAPT output file can be found in ')
+print(saptoutdir)
 
 ###########################################################################
 ###########################################################################

@@ -63,26 +63,26 @@ mon2 = data[itag][1]
 
 ###########################################################################
 # Remove slater test fails
-names = subprocess.check_output('echo ' + saptoutdir + '*.out', shell=True)
+names = subprocess.check_output('echo ' + saptoutdir + '*.out', shell=True, text=True)
 names = names.split()
 
 pwd = os.getcwd()
 os.chdir(saptoutdir)
 
 slater_data = subprocess.check_output('grep "RKS STATE 1.1 Energy" -B 9 ' +
-'*out | grep "Slater Test"', shell=True)
+'*out | grep "Slater Test"', shell=True, text=True)
 
 slater_data = slater_data.split('\n')
 slater_data = [ line.split() for line in slater_data ]
 
-eint_data = subprocess.check_output('grep "EINT_DFT" ' + '*out', shell=True)
+eint_data = subprocess.check_output('grep "EINT_DFT" ' + '*out', shell=True, text=True)
 eint_data = eint_data.split('\n')
 eint_data = [ line.split() for line in eint_data ]
 
 os.chdir(pwd)
 
 subprocess.call(['mkdir','-p',saptbaddir])
-print 'Removing the following unconverged calculations:'
+print('Removing the following unconverged calculations:')
 flag=False
 for i,line in enumerate(names):
     # print every third line, which should contain the file name
@@ -108,14 +108,14 @@ for i,line in enumerate(names):
     eint = abs(float(eint_data[i][-2])) # units in mH
 
     if slater_error/eint > rtol or slater_error > atol:
-        print line, slater_error, eint, slater_error/eint*100
+        print(line, slater_error, eint, slater_error/eint*100)
         subprocess.call(['mv',line,saptbaddir])
         flag = True
 
 if not flag:
-    print 'None'
-print 'The above calculations have been moved to '
-print saptbaddir
+    print('None')
+print('The above calculations have been moved to ')
+print(saptbaddir)
         
 ###########################################################################
 
@@ -137,25 +137,25 @@ nmon2 = len(mon2_atoms)
 # script
 os.chdir(saptoutdir)
 sapt_file = mon1 + '_' + mon2 + '.sapt'
-print 'Compiling SAPT information (this may take a minute).'
-sapt_lines = subprocess.check_output([sapt_script])
+print('Compiling SAPT information (this may take a minute).')
+sapt_lines = subprocess.check_output([sapt_script],text=True)
 sapt_lines = [line.split() for line in sapt_lines.split('\n')]
-print 'Writing SAPT information to file.'
+print('Writing SAPT information to file.')
 
 # Check that the SAPT file has the correct number of atoms for each monomer
 if nmon1 != int(sapt_lines[0][0]) or nmon2 != int(sapt_lines[nmon1+1][0]):
-    print 'nmon1 = ', nmon1
-    print 'nmon2 = ', nmon2
+    print('nmon1 = ', nmon1)
+    print('nmon2 = ', nmon2)
     sys.exit('Incorrect number of atoms for one of the monomers.')
 
 # nfiles and nlines are the number of dimer geometries and number of lines per
 # information block, respectively
 nfiles = sum([1 for i in sapt_lines if i == []]) - 1 #-1 to take care of blank line at end of file
-nlines = len(sapt_lines)/nfiles
+nlines = int(len(sapt_lines)/nfiles)
 
 shift_mon1 = 1
 shift_mon2 = nmon1 + 2
-for i in xrange(nfiles):
+for i in range(nfiles):
     for iatom,atom in enumerate(mon1_atoms):
         sapt_lines[i*nlines + iatom + shift_mon1][0] = atom
     for iatom,atom in enumerate(mon2_atoms):
@@ -167,8 +167,8 @@ with open(sapt_file,'w') as f:
         template = '{:20s}'*len(line) + '\n'
         f.write(template.format(*line))
 
-print 'The SAPT output file can be found in '
-print saptoutdir
+print('The SAPT output file can be found in ')
+print(saptoutdir)
 
 #os.chdir(homedir)
 

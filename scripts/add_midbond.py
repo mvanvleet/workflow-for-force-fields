@@ -37,7 +37,7 @@ def add_midbond(xyz_file,i_atoms):
     num_atoms = str(int(num_atoms)+1) + "\n"
     #write new xyz file with midbond functions
     split_lines.append(pos_midbond)
-    split_lines=[map(str,ln) for ln in split_lines]
+    split_lines=[list(map(str,ln)) for ln in split_lines]
     coordinates = ['{:2} {:>22} {:>22} {:>22}\n'.format(*line) \
                     for line in split_lines[2:]]
     
@@ -56,7 +56,7 @@ if __name__=='__main__':
         for file in sys.argv[3:]:
             add_midbond(file,[int(sys.argv[1]),int(sys.argv[2])])
     except (IndexError,TypeError):
-        print 'Error:Incorrectly formatted arguments and/or xyz file.'
-        print "Usage: $ python add_midbond.py <atom1 index> <atom2 index> <file.xyz> [file2.xyz] [etc.]"
-        print
+        print('Error:Incorrectly formatted arguments and/or xyz file.')
+        print("Usage: $ python add_midbond.py <atom1 index> <atom2 index> <file.xyz> [file2.xyz] [etc.]")
+        print()
         raise

@@ -36,38 +36,38 @@ class GenerateGridPoints():
 
         if run:
 
-            print ''
-            print "##########################################################################"
-            print "##########################################################################"
-            print "Welcome to the generate_grid_points program!\n"
-            print "For more help text about what's going on,",\
-                    "refer to the example input file 'generate_grid_settings.inp'\n"
+            print('')
+            print("##########################################################################")
+            print("##########################################################################")
+            print("Welcome to the generate_grid_points program!\n")
+            print("For more help text about what's going on,",\
+                    "refer to the example input file 'generate_grid_settings.inp'\n")
             self.ReadInput(parameterfile)
 
             # Orient each monomer according to settings defined in parameterfile
             # Orient Monomer A:
             self.mona = self.OrientMonomer(self.mona,self.scan_vector,self.mona_origin)
-            print ''
-            print "##########################################################################"
-            print 'Final Oriented coordinates for Monomer A are:'
+            print('')
+            print("##########################################################################")
+            print('Final Oriented coordinates for Monomer A are:')
             coordinates = ['{:2} {:>14.6f} {:14.6f} {:>14.6f}'.format(*line) \
                             for line in self.mona]
             for line in coordinates:
-                print line
+                print(line)
 
             # Orient Monomer B (choice of scanvector here is irrelevant):
             self.monb = self.OrientMonomer(self.monb,[0,0,1],self.monb_origin)
-            print "##########################################################################"
-            print 'Final Oriented coordinates for Monomer B are:'
+            print("##########################################################################")
+            print('Final Oriented coordinates for Monomer B are:')
             coordinates = ['{:2} {:>14.6f} {:14.6f} {:>14.6f}'.format(*line) \
                             for line in self.monb]
             for line in coordinates:
-                print line
-            print "##########################################################################"
+                print(line)
+            print("##########################################################################")
 
             # Generate dimer configurations: 
-            print 'Generating '+str(self.n_points)+' configurations.'
-            print 'Output files will be of the form: ',self.output_name+'_id#.xyz'
+            print('Generating '+str(self.n_points)+' configurations.')
+            print('Output files will be of the form: ',self.output_name+'_id#.xyz')
             for nfile in range(self.n_points):
                 reject_point = True
                 fill = int(math.log10(self.n_points-1))+1
@@ -90,10 +90,10 @@ class GenerateGridPoints():
                 dimer = self.mona + self.new_monb
                 io.WriteCoordinates(dimer,filename)
 
-            print ''
-            print 'Points successfully generated. Exiting now.'
-            print "##########################################################################"
-            print "##########################################################################"
+            print('')
+            print('Points successfully generated. Exiting now.')
+            print("##########################################################################")
+            print("##########################################################################")
 
         return
 ####################################################################################################    
@@ -107,6 +107,7 @@ class GenerateGridPoints():
         """
     
         # Read in parameter file 
+        print(parameterfile)
         with open(parameterfile,'r') as f:
             lines = f.readlines()
             data1=[line.split('#') for line in lines] #eliminate comment lines
@@ -160,7 +161,7 @@ class GenerateGridPoints():
             elif 'scan_vector' in line[0]:
                 scan_vector = line[1] 
             else:
-                print 'Unrecognized option ',line[0]
+                print('Unrecognized option ',line[0])
 
         # Read in monomer information from geometry file
         try:
@@ -208,33 +209,33 @@ class GenerateGridPoints():
         else:
             self.monb_origin=self.GetCOM(self.monb)
 
-        print "##########################################################################"
-        print "The following scan parameters have been selected:"
-        print 'Number of dimer configurations:',self.n_points
-        print 'Input geometry file:',self.geometry_file
+        print("##########################################################################")
+        print("The following scan parameters have been selected:")
+        print('Number of dimer configurations:',self.n_points)
+        print('Input geometry file:',self.geometry_file)
 
-        print 'Origin point for monomer a (relative to input coordinates):',self.mona_origin
-        print 'Origin point for monomer b (relative to input coordinates):',self.monb_origin
-        print 'Scan Vector: ',self.scan_vector
-        print ''
-        print 'Monomer B will be placed relative to Monomer A according to the following constraints:'
-        print "Radius (Angstroms): "+str(self.min_r)+" <= r < "+str(self.max_r)
-        print "Azimuthal angle: "+str(self.min_theta)+" <= theta < "+str(self.max_theta)
-        print "Polar angle: "+str(self.min_phi)+" <= phi < "+str(self.max_phi)
+        print('Origin point for monomer a (relative to input coordinates):',self.mona_origin)
+        print('Origin point for monomer b (relative to input coordinates):',self.monb_origin)
+        print('Scan Vector: ',self.scan_vector)
+        print('')
+        print('Monomer B will be placed relative to Monomer A according to the following constraints:')
+        print("Radius (Angstroms): "+str(self.min_r)+" <= r < "+str(self.max_r))
+        print("Azimuthal angle: "+str(self.min_theta)+" <= theta < "+str(self.max_theta))
+        print("Polar angle: "+str(self.min_phi)+" <= phi < "+str(self.max_phi))
         if self.cutoff_type == 'absolute':
-            print "Minimum allowed separation between any intermonomer contacts: ",\
-                self.cutoff_min,'Angstroms'
-            print "Maximum allowed separation between monomers (as measured by shortest contact length): ",\
-                self.cutoff_max,'Angstroms'
+            print("Minimum allowed separation between any intermonomer contacts: ",\
+                self.cutoff_min,'Angstroms')
+            print("Maximum allowed separation between monomers (as measured by shortest contact length): ",\
+                self.cutoff_max,'Angstroms')
         elif self.cutoff_type == 'vdw':
-            print "Minimum allowed separation between any intermonomer contacts: ",\
-                self.cutoff_min,'of the Van der Waals radii between atoms'
-            print "Maximum allowed separation between monomers (as measured by shortest contact length): ",\
-                self.cutoff_max,'of the Van der Waals radii between atoms'
+            print("Minimum allowed separation between any intermonomer contacts: ",\
+                self.cutoff_min,'of the Van der Waals radii between atoms')
+            print("Maximum allowed separation between monomers (as measured by shortest contact length): ",\
+                self.cutoff_max,'of the Van der Waals radii between atoms')
         else:
-            print
+            print()
             sys.exit('Cutoff type not recognized. Please specify either absolute or vdw.')
-        print "##########################################################################"
+        print("##########################################################################")
 
 
         return(self.mona,self.monb)
@@ -449,7 +450,7 @@ class GenerateGridPoints():
                     min_separation = min(min_separation,vdw_radius)
 
         else:
-            print self.cutoff_type, ' not a known cutoff type.'
+            print(self.cutoff_type, ' not a known cutoff type.')
             sys.exit('Exiting.')
 
         # Ensure monomers are sufficiently close to one another

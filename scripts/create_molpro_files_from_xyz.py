@@ -1,7 +1,7 @@
-#!/home/ehermes/local/bin/python
+#!/usr/bin/env python
 import sys
 import os
-import commands
+import subprocess
 import math
 
 '''
@@ -34,20 +34,20 @@ $ create_molpro_files_from_xyz.py <template_file_prefix> <geometry_file_prefix>
 try:
     template_file_prefix=sys.argv[1]
 except IndexError:
-    print error_message
+    print(error_message)
     sys.exit()
 # geometry_file_prefix refers to input .gxyz files (see above)
 try:
     geometry_file_prefix=sys.argv[2]
 except IndexError:
-    print error_message
+    print(error_message)
     sys.exit()
 ##################### End Input Parameters Section ########################
 
 
 ##################### Begin Script #######################################
 #read in data from input template file
-input_file = file(template_file_prefix+'_template.com', 'r')
+input_file = open(template_file_prefix+'_template.com', 'r')
 prelines = []
 postlines = []
 before_geometry_block = True
@@ -62,11 +62,11 @@ for line in input_file:
         continue
 input_file.close()
 
-num_geometries = commands.getoutput("ls " + geometry_file_prefix + '_*.xyz | grep -c '+  geometry_file_prefix) 
-print 'Writing ' + str(num_geometries) + ' input file(s).'
+num_geometries = subprocess.getoutput("ls " + geometry_file_prefix + '_*.xyz | grep -c '+  geometry_file_prefix) 
+print('Writing ' + str(num_geometries) + ' input file(s).')
 
 #write all relevant .com files
-xyzlist = commands.getoutput("ls " + geometry_file_prefix +'_*.xyz').split()
+xyzlist = subprocess.getoutput("ls " + geometry_file_prefix +'_*.xyz').split()
 idlist = [line.replace(geometry_file_prefix+"_",'').replace('.xyz','') for line in xyzlist]
 
 for ifile in idlist:
@@ -83,7 +83,7 @@ for ifile in idlist:
     geometry_block.append("\t}\n")
 
     #actually write output file
-    output_file = file(output_file_name, 'w')
+    output_file = open(output_file_name, 'w')
     for line in prelines:
         output_file.write(line)
     for line in geometry_block:
@@ -92,6 +92,6 @@ for ifile in idlist:
         output_file.write(line)
     output_file.close()
 
-print 'Successfully wrote input files.'
+print('Successfully wrote input files.')
 
 #################### End Script ###########################################

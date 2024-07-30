@@ -129,13 +129,13 @@ class CreateSAPTInputFile():
             i_mon1 = data[i][1]
             i_mon2 = data[i][2]
 
-            print 'Inserting midbonds between',
+            print('Inserting midbonds between', end=' ')
             if i_mon1.upper() != 'COM':
-                print 'atom',
-            print i_mon1 + ' on mon A and',
+                print('atom', end=' ')
+            print(i_mon1 + ' on mon A and', end=' ')
             if i_mon2.upper() != 'COM':
-                print 'atom',
-            print i_mon2 + ' on mon B.'
+                print('atom', end=' ')
+            print(i_mon2 + ' on mon B.')
 
             for c,coords in enumerate(xyz_coords):
                 if i_mon1.upper() == 'COM':
@@ -212,7 +212,7 @@ class CreateSAPTInputFile():
         '''
         '''
 
-        print 'Creating CCSD(T) input file.'
+        print('Creating CCSD(T) input file.')
         homedir = os.getcwd()
         input_filepath = ccsdtdir+'/'+self.mona+'_'+self.monb+'_'+ ccsdt_template_file
         

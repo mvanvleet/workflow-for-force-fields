@@ -86,7 +86,7 @@ for mon in mons:
     outfile = isadir + '/' + mon + out_dir + mon + '.out'
     try:
         output = subprocess.check_output(['grep','"NO CONVERGENCE"', outfile])
-        print 'WARNING!!!! Stockholder procedure did not converge!'
+        print('WARNING!!!! Stockholder procedure did not converge!')
     except subprocess.CalledProcessError:
         pass
 
@@ -94,13 +94,13 @@ for mon in mons:
     with open(outfile,'r') as f:
         lines = f.readlines()
     start_flag = '! Multipole moments for'
-    start_line = [i for i in xrange(len(lines)) if start_flag in lines[i]][0]
+    start_line = [i for i in range(len(lines)) if start_flag in lines[i]][0]
     end_flag = 'Total molecular moments relative to origin'
-    end_line = [i for i in xrange(len(lines)) if end_flag in lines[i]][0]
+    end_line = [i for i in range(len(lines)) if end_flag in lines[i]][0]
 
     isa_mom_path = isadir + mon + '_' + isa_mom_file
-    print 'Writing ISA charges to:'
-    print isa_mom_path
+    print('Writing ISA charges to:')
+    print(isa_mom_path)
 
     data = [line.split() for line in lines[start_line:end_line]]
     with open(isa_mom_path,'w') as f:
@@ -124,8 +124,8 @@ for mon in mons:
     isa_max_rank = [0,2]
     for isa_file,max_rank in zip(isa_files,isa_max_rank):
         isa_mom_path = isadir + mon + '_' + isa_file
-        print 'Writing truncated ISA charges to:'
-        print isa_mom_path
+        print('Writing truncated ISA charges to:')
+        print(isa_mom_path)
         with open(isa_mom_path,'w') as f:
             collect_flag = True
             multipole_count = 0

@@ -29,7 +29,7 @@ Last Updated: 07/31/14 by mvanvleet
 
 submit_template = '''#!/bin/bash
 
-runcamcasp.py {0} --clt {0}.clt -d {0} --direct -q default --nproc 20 --ifexists delete
+submit_camcasp.py {0} --clt {0}.clt -d {0} --direct -q batch --cores 20 --cores-camcasp 20 --ifexists delete
 '''
 
 maindir = os.getcwd().replace("/scripts",'')
@@ -70,23 +70,23 @@ for mon in mons:
 
     ##################### Begin Script #######################################
     #read in data from input template file
-    input_file = file(template_file, 'r')
-    prelines = []
-    postlines = []
-    before_geometry_block = True
-    for line in input_file:
-        if 'GEOMETRY_BLOCK_GOES_HERE' not in line and before_geometry_block:
-            prelines.append(line)
-            continue
-        elif 'GEOMETRY_BLOCK_GOES_HERE' in line:
-            before_geometry_block = False
-        elif not before_geometry_block:
-            postlines.append(line)
-            continue
-    input_file.close()
+    with open(template_file,'r') as infile:
+        input_file = infile.readlines()
+        prelines = []
+        postlines = []
+        before_geometry_block = True
+        for line in input_file:
+            if 'GEOMETRY_BLOCK_GOES_HERE' not in line and before_geometry_block:
+                prelines.append(line)
+                continue
+            elif 'GEOMETRY_BLOCK_GOES_HERE' in line:
+                before_geometry_block = False
+            elif not before_geometry_block:
+                postlines.append(line)
+                continue
 
     # read in geometry from corresponding .gxyz file and format for gamess 
-    print geometry_file
+    print(geometry_file)
     xyz = io.ReadCoordinates(geometry_file)[0]
 
     # Read in atomtypes from atomtypes file
@@ -105,14 +105,13 @@ for mon in mons:
 
     #actually write output file
     output_file_name = isadir + mon + '.clt'
-    output_file = file(output_file_name, 'w')
-    for line in prelines:
-        output_file.write(line)
-    for line in geometry_block:
-        output_file.write(line)
-    for line in postlines:
-        output_file.write(line)
-    output_file.close()
+    with open(output_file_name, 'w') as output_file:
+        for line in prelines:
+            output_file.write(line)
+        for line in geometry_block:
+            output_file.write(line)
+        for line in postlines:
+            output_file.write(line)
 
 
     # Substitute in ionization potential and molecule name
@@ -127,7 +126,7 @@ for mon in mons:
     for [fill,item] in zip(fill_items,items):
         subprocess.call(['sed','-i',"s/"+fill+'/'+str(item)+'/',output_file_name])
 
-    print 'Successfully wrote input file.'
+    print('Successfully wrote input file.')
 
     # Make submit script
     with open(isadir + 'submit_' + mon + '.sh','w') as f:

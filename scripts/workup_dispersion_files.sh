@@ -1,7 +1,7 @@
 #!/bin/bash
 scriptsdir=`pwd`
 maindir=${scriptsdir#scripts}
-dispersiondir=$maindir/dispersion/
+dispersiondir=$maindir/isa/
 
 constraints=$maindir/templates/dispersion_base_constraints.index
 drude_constraints=$maindir/templates/drude_base_constraints.index

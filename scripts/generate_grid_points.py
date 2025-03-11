@@ -2,15 +2,16 @@
 
 # built-in python modules
 import numpy as np
-from random import random
+import random 
 import math
 from math import sqrt,cos,sin,acos,pi
+import os 
 
 # python modules created by mvanvleet; these need to be imported into your
 # PYTHONPATH for this code to run properly.
 from chemistry.stoichiometry import MolecularWeight
 from chemistry import elementdata
-from chemistry import io
+#from chemistry import io
 
 class GenerateGridPoints():
     """Given a set of properly formatted input files, one a parameter file and the
@@ -30,7 +31,7 @@ class GenerateGridPoints():
     """
 
 ####################################################################################################    
-    def __init__(self,parameterfile='generate_grid_settings.inp',run=True):
+    def __init__(self,parameterfile='generate_grid_settings.inp',run=True,verbose=True):
         """Runs the main program of the GenerateGridPoints class.
         """
 
@@ -48,47 +49,58 @@ class GenerateGridPoints():
             # Orient Monomer A:
             self.mona = self.OrientMonomer(self.mona,self.scan_vector,self.mona_origin)
             print('')
-            print("##########################################################################")
-            print('Final Oriented coordinates for Monomer A are:')
-            coordinates = ['{:2} {:>14.6f} {:14.6f} {:>14.6f}'.format(*line) \
-                            for line in self.mona]
-            for line in coordinates:
-                print(line)
+            if verbose:
+                print("##########################################################################")
+                template='\t{:2} {:>14.6f} {:14.6f} {:>14.6f}'
+                print('Final Oriented coordinates for Monomer A are:')
+                for i,conf in enumerate(self.mona):
+                    print(f"Conformer {i+1}:")
+                    for atom,line in zip(self.mona_elements, conf):
+                        print(template.format(atom,*line))
 
             # Orient Monomer B (choice of scanvector here is irrelevant):
-            self.monb = self.OrientMonomer(self.monb,[0,0,1],self.monb_origin)
-            print("##########################################################################")
-            print('Final Oriented coordinates for Monomer B are:')
-            coordinates = ['{:2} {:>14.6f} {:14.6f} {:>14.6f}'.format(*line) \
-                            for line in self.monb]
-            for line in coordinates:
-                print(line)
-            print("##########################################################################")
+            self.monb = self.OrientMonomer(self.monb,np.array([0,0,1]),self.monb_origin)
+            if verbose:
+                print("##########################################################################")
+                print('Input coordinates for Monomer B are:')
+                for i,conf in enumerate(self.monb):
+                    print(f"Conformer {i+1}:")
+                    for atom,line in zip(self.monb_elements, conf):
+                        print(template.format(atom,*line))
+                print("##########################################################################")
 
             # Generate dimer configurations: 
             print('Generating '+str(self.n_points)+' configurations.')
             print('Output files will be of the form: ',self.output_name+'_id#.xyz')
+            random.seed()
             for nfile in range(self.n_points):
                 reject_point = True
                 fill = int(math.log10(self.n_points-1))+1
                 filename = self.output_name+'_'+str(nfile).zfill(fill)+'.xyz'
+
+                # Select a random conformer of Monomer A and B
+                iconf_mona = random.randrange(self.mona.shape[0])
+                iconf_monb = random.randrange(self.monb.shape[0])
+                confa = self.mona[iconf_mona]
+                confb = self.monb[iconf_monb]
                 while reject_point == True:
                     # Choose new location for Monomer B's center of mass (COM) 
-                    (r,theta,phi) = self.ChooseTranslationPoint(self.min_r,self.max_r,self.min_theta,self.max_theta,self.min_phi,self.max_phi)
+                    (r,theta,phi) = self.ChooseTranslationPoint(self.min_r,self.max_r,
+                            self.min_theta,self.max_theta,self.min_phi,self.max_phi)
                     drCOM = self.TranslateCOM(r,theta,phi)
                     # Choose rotation vector and angle (for orienting Monomer B)
                     (theta,b,c,d) = self.ChooseRotation()
                     # Determine new coordinates for monomer b, first by rotating
                     # and then by translating the COM
-                    rotated_monb = [self.RotatePoint(theta,[b,c,d],point[1:]) for point in self.monb]
-                    self.new_monb = [[rotated_monb[i][j] + drCOM[j] for j in range(3)] for i in range(len(self.monb))]
-                    [self.new_monb[i].insert(0,self.monb[i][0]) for i in range(len(self.monb))]
+                    rotated_confb = np.array([self.RotatePoint(theta,[b,c,d],atom) for atom in confb])
+                    new_confb = rotated_confb + drCOM
+                    ## [[rotated_confb[i][j] + drCOM[j] for j in range(3)] for i in range(len(self.monb))]
+                    #[self.new_monb[i].insert(0,self.monb[i][0]) for i in range(len(self.monb))]
                     # Employ rejection criteria for the chosen configuration. Upon
                     # rejection, cycle back through the loop. Otherwise, write the
                     # configuration to file.
-                    reject_point = self.RejectPoint(self.mona,self.new_monb,self.cutoff_min, self.cutoff_max)
-                dimer = self.mona + self.new_monb
-                io.WriteCoordinates(dimer,filename)
+                    reject_point = self.RejectPoint(confa,new_confb,self.cutoff_min, self.cutoff_max)
+                self.WriteCoordinates(iconf_mona, iconf_monb, confa,new_confb,filename)
 
             print('')
             print('Points successfully generated. Exiting now.')
@@ -120,8 +132,12 @@ class GenerateGridPoints():
             # General Scan Parameters:
             elif 'n_points' in line[0]:
                 self.n_points = int(line[1])
-            elif 'geometry_file' in line[0]:
-                self.geometry_file = line[1] 
+            elif 'geometry_file_mona' in line[0]:
+                self.geometry_file_mona = line[1] 
+                print(self.geometry_file_mona)
+            elif 'geometry_file_monb' in line[0]:
+                self.geometry_file_monb = line[1]
+                print(self.geometry_file_monb)
             elif 'output_name' in line[0]:
                 self.output_name = line[1] 
 
@@ -163,59 +179,50 @@ class GenerateGridPoints():
             else:
                 print('Unrecognized option ',line[0])
 
-        # Read in monomer information from geometry file
-        try:
-            with open(self.geometry_file,'r') as f:
-                lines = f.readlines()
-        except IOError:
-            message = 'Error! The geometry file you indicated does not exist!\n'+\
-            'Check your input file to make sure your geometry input file names match.'
-            raise SystemExit(message)
-        data=[line.split() for line in lines[1:]]
-        self.natoms_mona = data[0][0]
-        mona_geo = []
-        monb_geo = []
-        monb=False
-        for line in data[1:]:
-            if len(line) != 1 and monb==False:
-                mona_geo.append(line)
-            elif monb==True:
-                monb_geo.append(line)
-            elif len(line) == 1:
-                self.natoms_monb = line[0]
-                monb=True
-        self.mona = [[geo[0],float(geo[1]),float(geo[2]),float(geo[3])] for geo in mona_geo]
-        self.monb = [[geo[0],float(geo[1]),float(geo[2]),float(geo[3])] for geo in monb_geo]
+        # Read in XYZ data for each monomer
+        self.mona, self.mona_elements, self.natoms_mona = self.readGeometryData(self.geometry_file_mona)
+        if self.geometry_file_mona == self.geometry_file_monb:
+            self.monb, self.monb_elements, self.natoms_monb = self.mona, self.mona_elements, self.natoms_mona
+        else:
+            self.monb, self.monb_elements, self.natoms_monb = self.readGeometryData(self.geometry_file_monb)
 
         # Determine the scan vector based on user input
         v = list(scan_vector.split(','))
         if scan_vector_type == 0:
             v = [int(item) for item in v]
-            self.scan_vector = [self.mona[v[1]-1][i] - self.mona[v[0]-1][i] for i in range(1,4)] # -1 to deal with reindexing
+            if v[0] > self.natoms_mona or v[1] > self.natoms_mona:
+                raise RuntimeError(f"""You have specified a scan vector that
+                involves atom indices larger than the number of atoms in
+                Monomer A ({self.geometry_file_mona}). Correct your geometry
+                settings file (likely generate_grid_settings.inp).""")
+            self.scan_vector = self.mona[:,v[1]-1,:] - self.mona[:,v[0]-1,:] 
         if scan_vector_type == 1:
-            self.scan_vector = [float(coord) for coord in v]
+            self.scan_vector = np.array([float(coord) for coord in v])
 
         # Choose origin points for monomers a and b based on user input.
         if origin_typea == 2:
-            self.mona_origin = [float(coord) for coord in mona_origin.split(',')]
+            self.mona_origin = np.array(mona_origin.split(','),dtype=float)
         elif origin_typea == 1:
-            self.mona_origin=self.mona[int(mona_origin)-1][1:]
+            self.mona_origin=self.mona[:,int(mona_origin)-1,:]
         else:
-            self.mona_origin=self.GetCOM(self.mona)
+            self.mona_origin=self.GetCOM(self.mona_elements, self.mona)
         if origin_typeb == 2:
-            self.monb_origin = [float(coord) for coord in monb_origin.split(',')]
+            self.monb_origin = np.array(monb_origin.split(','),dtype=float)
         elif origin_typeb == 1:
-            self.monb_origin=self.monb[int(monb_origin)-1][1:]
+            self.monb_origin=self.monb[:,int(monb_origin)-1,:]
         else:
-            self.monb_origin=self.GetCOM(self.monb)
+            self.monb_origin=self.GetCOM(self.monb_elements, self.monb)
 
         print("##########################################################################")
         print("The following scan parameters have been selected:")
         print('Number of dimer configurations:',self.n_points)
-        print('Input geometry file:',self.geometry_file)
-
+        print("##########################################################################")
+        print('Input geometry file for mona:',self.geometry_file_mona)
         print('Origin point for monomer a (relative to input coordinates):',self.mona_origin)
+        print("##########################################################################")
+        print('Input geometry file for monb:',self.geometry_file_monb)
         print('Origin point for monomer b (relative to input coordinates):',self.monb_origin)
+        print("##########################################################################")
         print('Scan Vector: ',self.scan_vector)
         print('')
         print('Monomer B will be placed relative to Monomer A according to the following constraints:')
@@ -237,38 +244,88 @@ class GenerateGridPoints():
             sys.exit('Cutoff type not recognized. Please specify either absolute or vdw.')
         print("##########################################################################")
 
-
         return(self.mona,self.monb)
 ####################################################################################################    
     
 
+#################################################################################################### 
+    def readGeometryData(self,geometry_file):
+        """Returns the xyz coordinates, element names, and number of atoms
+        from a specified geometry file."""
+
+        # Open the conformers file
+        with open(geometry_file, 'r') as f:
+            lines = f.readlines()
+
+        # Calculate the total number of atoms and conformers based on the file content
+        natoms = int(lines[0])  # Number of atoms in each conformer
+        print("Number of Atoms in Conformer: ", natoms)
+        lines_per_conformer = natoms + 2  # Including the first line and the empty line
+
+        nconformers = len(lines) // lines_per_conformer
+        print(f"Number of conformers: {nconformers}")
+        xyz = np.zeros((nconformers,natoms,3))
+        elements = [line.split()[0] for line in lines[2:2+natoms]]
+
+        # Iterate through the number of conformers and extract their coordinates
+        for i in range(nconformers):
+            start_index = 2 + i*(natoms + 2)  # Skip the header lines and the first two lines per conformer
+            end_index = start_index + natoms
+            if natoms != int(lines[start_index - 2]):
+                raise RuntimeError(f"""Inconsistency in the number of atoms
+                within the conformer file {geometry_file}.  Check your .xyz
+                file for errors and make sure each structure within the .xyz
+                file has {natoms} atoms.""")
+            try:
+                xyz[i] = np.array([line.split()[1:] for line in lines[start_index:end_index]],
+                        dtype=float) #skip element names, get coordinates only
+            except ValueError:
+                print(f"""!!!!!!!!!! Error !!!!!!!!!!!!!
+                Inconsistent data structure detected within the
+                conformer file {geometry_file}. Make sure this file
+                follows standard .xyz format.\n\n""")
+                raise
+            if elements != [line.split()[0] for line in lines[start_index:end_index]]:
+                raise RuntimeError(f"""Inconsistency in the element ordering
+                within the conformer file {geometry_file}.  Check your .xyz
+                file for errors and make sure each structure within the .xyz
+                file has the elements listed in the order {elements}.""")
+
+        return xyz, elements, natoms
+#################################################################################################### 
+
+
+#################################################################################################### 
+    def chooseConformer(self, monomer):
+        import random
+        conformer_shape = self.conformers.shape
+        random_con = ((random.randint(0, conformer_shape[0] - 1)))
+        random_con = self.conformers[random_con]
+        #monomer = random_con
+
+        return random_con
+#################################################################################################### 
+
+
 ####################################################################################################    
-    def GetCOM(self,coordinates):
-        """Given an array 'coordinates' of the form 
-        [[symbol1,x1,y1,z1],[symbol2,x2,y2,z2],...[symboln,xn,yn,zn]]
-        which describes the coordinates of a molecule, returns the center of mass
-        of said molecule. Units (generally Angstroms or Bohr)  are unchanged from
+    def GetCOM(self, elements, coordinates):
+        """Given a list of elements and array of xyz coordintes, returns the center of mass
+        of the molecule. Units (generally Angstroms or Bohr) are unchanged from
         input.
         """
-        # COM formula: xCOM = sum(m_i*x_i)/M (sum over i=1,N); same for y and z
     
         # Total Mass of molecule:
-        Mass = MolecularWeight(coordinates)
+        Mass = MolecularWeight(elements)
     
         # Generate list of each atom's atomic number, xyzcoordinate, and atomic
         # mass:
-        atomic_numbers = [elementdata.AtomicNumber(atom[0]) for atom in coordinates]
-        xcoords = [atom[1] for atom in coordinates]
-        ycoords = [atom[2] for atom in coordinates]
-        zcoords = [atom[3] for atom in coordinates]
-        masses = [elementdata.Weight(element) for element in atomic_numbers]
-        
-        # Compute COM:
-        xCOM = np.dot(masses,xcoords)/Mass
-        yCOM = np.dot(masses,ycoords)/Mass
-        zCOM = np.dot(masses,zcoords)/Mass
+        atomic_numbers = [elementdata.AtomicNumber(atom) for atom in elements]
+        masses = np.array([elementdata.Weight(element) for element in atomic_numbers])
+
+        # COM formula: xCOM = sum(m_i*x_i)/M (sum over i=1,N); same for y and z
+        COM = np.einsum('ijk,j',coordinates,masses)/Mass
     
-        return [xCOM,yCOM,zCOM]
+        return COM
 ####################################################################################################    
 
     
@@ -282,15 +339,15 @@ class GenerateGridPoints():
         """
         #Randomly choose r: uniform distribution on the interval [r_min,r_max]
         dr = (r_max - r_min)
-        r = random()*dr + r_min
+        r = random.random()*dr + r_min
     
         #Randomly choose theta: uniform distribution on the interval [theta_min,theta_max]
         dtheta = (theta_max - theta_min)
-        theta = random()*dtheta + theta_min
+        theta = random.random()*dtheta + theta_min
     
         #Randomly choose phi: weighted distribution on the interval [phi_min,phi_max]
         dcosphi = (cos(phi_max) - cos(phi_min))
-        phi = acos(random()*dcosphi + cos(phi_min))
+        phi = acos(random.random()*dcosphi + cos(phi_min))
     
         return (r,theta,phi)
 ####################################################################################################    
@@ -332,16 +389,16 @@ class GenerateGridPoints():
     
         #Randomly choose a: uniform distribution on the interval [a_min,a_max]
         da = (a_max - a_min)
-        a = random()*da + a_min
+        a = random.random()*da + a_min
         #Randomly choose b: uniform distribution on the interval [b_min,b_max]
         db = (b_max - b_min)
-        b = random()*db + b_min
+        b = random.random()*db + b_min
         #Randomly choose c: uniform distribution on the interval [c_min,c_max]
         dc = (c_max - c_min)
-        c = random()*dc + c_min
+        c = random.random()*dc + c_min
         #Randomly choose d: uniform distribution on the interval [d_min,d_max]
         dd = (d_max - d_min)
-        d = random()*dd + d_min
+        d = random.random()*dd + d_min
     
         return (a,b,c,d)
 ####################################################################################################    
@@ -376,12 +433,13 @@ class GenerateGridPoints():
     
         # Compute rotation of point about the axis
         new_point = np.dot(rotation,point)
-        return new_point.tolist()
+        return new_point
 ####################################################################################################    
     
     
 ####################################################################################################    
-    def OrientMonomer(self,monomer_coordinates,scan_vector=[0,0,1],new_origin=[0,0,0]):
+    def OrientMonomer(self,monomer_coordinates,
+            scan_vector=np.array([0,0,1]),new_origin=np.array([0,0,0])):
         """Orients monomer a so that the monomer is centered according to
         new_origin and aligned such that scan_vector and the z-axis run
         parallel to one another.
@@ -399,22 +457,59 @@ class GenerateGridPoints():
         Output:
         Updated monomer_coordinates.
         """
-        # Write monomer coordinates as a list
-        coordinates = [[float(coord[i]) for i in range(1,4)] for coord in monomer_coordinates]
-        # Translate coordinates such that new_origin is at the origin
-        origin=new_origin
-        trans_coords = [[coord[i]-origin[i] for i in range(3)] for coord in coordinates]
+
+        trans_coords = monomer_coordinates - new_origin[:,np.newaxis,:]
     
         # Rotate coordinates such that scan_vector is aligned with the z-axis
-        scanvec = scan_vector/np.linalg.norm(scan_vector) #normalize
-        z_axis = [0,0,1]
+        if len(scan_vector.shape) == 1:
+            scan_vector = scan_vector[np.newaxis,:]
+        scanvec = scan_vector/np.linalg.norm(scan_vector,axis=1,keepdims=True) #normalize
+        z_axis = np.array([0,0,1])
         rotation_vector = np.cross(scanvec,z_axis)
-        rotation_angle = math.degrees(acos(np.dot(scanvec,z_axis)))
-    
-    
-        rotated_coords = [self.RotatePoint(rotation_angle,rotation_vector,point) for point in trans_coords]
-        [rotated_coords[i].insert(0,monomer_coordinates[i][0]) for i in range(len(monomer_coordinates))]
+        rotation_angle = np.arccos(np.dot(scanvec,z_axis))*180/np.pi
+        ## print(rotation_angle)
+        ## exit()
+        ## rotation_angle = math.degrees(acos(np.dot(scanvec,z_axis)))
+        if rotation_vector.shape[0] != trans_coords.shape[0]:
+            if rotation_vector.shape[0] == 1:
+                rotation_vector = np.repeat(rotation_vector, trans_coords.shape[0], axis=0)
+                rotation_angle = np.repeat(rotation_angle, trans_coords.shape[0], axis=0)
+            else:
+                raise RuntimeError("""The given scan vector has incompatible
+                dimensions with the given monomer geometry:
+                Rotation Vector Shape: {rotation_vector.shape}
+                Monomer Coordinates Shape: {trans_coords.shape[::2]}
+                """)
+
+        rotated_coords = np.zeros_like(trans_coords)
+        for i,conformer in enumerate(trans_coords):
+            for j,atom in enumerate(conformer):
+                rotated_coords[i,j] = self.RotatePoint(rotation_angle[i], rotation_vector[i], atom)
+
         return rotated_coords
+####################################################################################################    
+
+
+####################################################################################################    
+    def WriteCoordinates(self,iconf_mona, iconf_monb, confa,confb,filename):
+        """Write a .xyz file corresponding to a chosen dimer configuration."""
+
+        parentdir = os.path.dirname(filename)
+        if parentdir != '':
+            os.makedirs(os.path.dirname(filename),exist_ok=True)
+
+        num_atoms = self.natoms_mona + self.natoms_monb
+        title_text = 'MonA Conformer #{0}, MonB Conformer #{1}'.format(iconf_mona+1, iconf_monb+1)
+        template = '{:2} {:>16.8f} {:16.8f} {:>16.8f}\n'
+        with open(filename,'w') as f:
+            f.write(f"{num_atoms}\n")
+            f.write(title_text+"\n")
+            for i,atom in enumerate(confa):
+                f.write(template.format(self.mona_elements[i],*atom))
+            for i,atom in enumerate(confb):
+                f.write(template.format(self.monb_elements[i],*atom))
+
+        return
 ####################################################################################################    
     
     
@@ -430,19 +525,19 @@ class GenerateGridPoints():
         if self.cutoff_type == 'absolute':  # use this option if using an absolute cutoff (in A)
             for a in mona_coords:
                 for b in monb_coords:
-                    rvec = [a[i] - b[i] for i in range(1,4)]
+                    rvec = a - b
                     radius = sqrt(np.dot(rvec,rvec))
                     if radius < cutoff_min:
                         return True
                     min_separation = min(min_separation,radius)
 
         elif self.cutoff_type == 'vdw': # string should be 'vdw' to indicate use of VdW cutoff radius
-            for a in mona_coords:
-                vdw_a = elementdata.VdWRadius(a[0])
-                for b in monb_coords:
-                    vdw_b = elementdata.VdWRadius(b[0])
+            for i,a in enumerate(mona_coords):
+                vdw_a = elementdata.VdWRadius(self.mona_elements[i])
+                for j,b in enumerate(monb_coords):
+                    vdw_b = elementdata.VdWRadius(self.monb_elements[j])
                     #r_cutoff = (vdw_a + vdw_b)*self.vdw_cutoff
-                    rvec = [a[i] - b[i] for i in range(1,4)]
+                    rvec = a - b
                     radius = sqrt(np.dot(rvec,rvec))
                     vdw_radius = radius/(vdw_a + vdw_b)
                     if vdw_radius < cutoff_min:
